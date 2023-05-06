@@ -8,7 +8,12 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Registration">
+      <Stack.Navigator
+        initialRouteName="Registration"
+        screenOptions={{
+          gestureEnabled: false,
+        }}
+      >
         <Stack.Screen
           name="Registration"
           component={Registration}

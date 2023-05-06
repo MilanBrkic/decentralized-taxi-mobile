@@ -52,8 +52,7 @@ export default function Registration({ navigation }) {
 
     try {
       const user = await backend.registerUser(username, password, phone);
-      console.log(JSON.stringify(user));
-      alert(`Registered user ${username}`);
+      navigation.navigate("MainMenu", { user });
     } catch (error) {
       alert("Error when registering user: " + error.response.data.message);
     }
@@ -74,8 +73,7 @@ export default function Registration({ navigation }) {
 
       try {
         const user = await backend.login(username, password);
-        alert(`Logged in user ${username}`);
-        navigation.navigate("MainMenu");
+        navigation.navigate("MainMenu", { user });
       } catch (error) {
         alert("Error when logging in: " + error.response.data.message);
       }
