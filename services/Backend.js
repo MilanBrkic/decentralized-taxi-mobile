@@ -17,22 +17,20 @@ class Backend {
         "Error when registering user",
         JSON.stringify(error.response.data)
       );
+      throw error;
     }
   };
 
-  login = async (username, password, phone) => {
+  login = async (username, password) => {
     try {
       const response = await this.axios.post(`${this.url}/login`, {
         username,
         password,
-        phone_number: phone,
       });
       return response.data;
     } catch (error) {
-      console.warn(
-        "Error when registering user",
-        JSON.stringify(error.response.data)
-      );
+      console.warn("Error on user login", JSON.stringify(error.response.data));
+      throw error;
     }
   };
 }

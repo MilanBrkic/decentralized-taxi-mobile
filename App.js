@@ -50,12 +50,16 @@ export default function App() {
       return;
     }
 
-    await backend.registerUser(username, password, phone);
-    console.log(`Registered user ${username}`);
-    alert(`Registered user ${username}`);
+    try {
+      const user = await backend.registerUser(username, password, phone);
+      console.log(JSON.stringify(user));
+      alert(`Registered user ${username}`);
+    } catch (error) {
+      alert("Error when registering user: " + error.response.data.message);
+    }
   };
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     if (showRegisterInputs || !showSignInInputs) {
       setShowSignInInputs(true);
       setShowRegisterInputs(false);
@@ -63,7 +67,17 @@ export default function App() {
       setPassword("");
       setPhone("");
     } else {
-      console.log("Sign In");
+      if (!username || !password) {
+        alert("Please enter all fields");
+        return;
+      }
+
+      try {
+        const user = await backend.login(username, password);
+        alert(`Logged in user ${username}`);
+      } catch (error) {
+        alert("Error when logging in: " + error.response.data.message);
+      }
     }
   };
 
@@ -90,6 +104,7 @@ export default function App() {
           <TextInput
             style={styles.input}
             placeholder="Enter username"
+            autoCapitalize="none"
             returnKeyType="done"
             onChangeText={(text) => setUsername(text)}
           />
