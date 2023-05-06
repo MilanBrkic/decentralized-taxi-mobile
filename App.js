@@ -11,18 +11,61 @@ import React, { useState } from "react";
 export default function App() {
   const [showRegisterInputs, setShowRegisterInputs] = useState(false);
   const [showSignInInputs, setShowSignInInputs] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
 
   const handleRegister = () => {
-    setShowRegisterInputs(true);
-    setShowSignInInputs(false);
+    if (!showRegisterInputs || showSignInInputs) {
+      setShowRegisterInputs(true);
+      setShowSignInInputs(false);
+      setUsername("");
+      setPassword("");
+      setPhone("");
+    } else {
+      registerUser();
+    }
+  };
+
+  const registerUser = async () => {
+    if (!username || !password || !phone) {
+      alert("Please enter all fields");
+      return;
+    }
+
+    if (username.length < 4) {
+      alert("Username must be at least 4 characters long");
+      return;
+    }
+
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters long");
+      return;
+    }
+
+    const pattern = new RegExp(/^[0-9\b]+$/);
+    if (pattern.test(phone)) {
+      alert("Phone number is not valid");
+      return;
+    }
+
+    console.log("Register");
   };
 
   const handleSignIn = () => {
-    setShowSignInInputs(true);
-    setShowRegisterInputs(false);
+    if (showRegisterInputs || !showSignInInputs) {
+      setShowSignInInputs(true);
+      setShowRegisterInputs(false);
+      setUsername("");
+      setPassword("");
+      setPhone("");
+    } else {
+      console.log("Sign In");
+    }
   };
 
   const handleBack = () => {
+    console.log("Back");
     setShowRegisterInputs(false);
     setShowSignInInputs(false);
   };
@@ -31,7 +74,7 @@ export default function App() {
     <View style={styles.container}>
       {showRegisterInputs || showSignInInputs ? (
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Text style={styles.backButtonText}>{"<"}</Text>
+          <Text style={styles.backButtonText}>{"<<<"}</Text>
         </TouchableOpacity>
       ) : null}
 
@@ -39,44 +82,49 @@ export default function App() {
         <Text>Decentralized Taxi App!</Text>
       )}
 
-      {showRegisterInputs && (
-        <>
+      {(showRegisterInputs || showSignInInputs) && (
+        <View style={styles.inputContainer}>
           <Text style={styles.label}>Username</Text>
-          <TextInput style={styles.input} placeholder="Enter username" />
+          <TextInput
+            style={styles.input}
+            placeholder="Enter username"
+            returnKeyType="done"
+            onChangeText={(text) => setUsername(text)}
+          />
           <Text style={styles.label}>Password</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter password"
             secureTextEntry={true}
-          />
-          <Text style={styles.label}>Phone Number</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter phone number"
-            keyboardType="phone-pad"
+            returnKeyType="done"
+            onChangeText={(text) => setPassword(text)}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Register</Text>
-          </TouchableOpacity>
-        </>
-      )}
+          {showRegisterInputs && (
+            <>
+              <Text style={styles.label}>Phone Number</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter phone number"
+                keyboardType="phone-pad"
+                returnKeyType="done"
+                onChangeText={(text) => setPhone(text)}
+              />
 
-      {showSignInInputs && (
-        <>
-          <Text style={styles.label}>Username</Text>
-          <TextInput style={styles.input} placeholder="Enter username" />
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter password"
-            secureTextEntry={true}
-          />
+              <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                <Text style={styles.buttonText}>Register</Text>
+              </TouchableOpacity>
+            </>
+          )}
 
-          <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-            <Text style={styles.buttonText}>Sign In</Text>
-          </TouchableOpacity>
-        </>
+          {showSignInInputs && (
+            <>
+              <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+                <Text style={styles.buttonText}>Sign In</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
       )}
 
       {!showRegisterInputs && !showSignInInputs && (
@@ -103,7 +151,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   inputContainer: {
-    width: "80%",
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "90%",
+    marginBottom: "50%",
   },
   label: {
     marginTop: 10,
@@ -146,6 +198,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    zIndex: 999, // set a higher value for zIndex
   },
   backButtonText: {
     color: "#fff",
