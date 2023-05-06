@@ -1,16 +1,18 @@
 {
-  "files.associations": {
-    "*.rsh": "javascript"
-  },
-  "javascript.suggest.completeFunctionCalls": true,
-  "workbench.colorCustomizations": {
-    "titleBar.activeBackground": "#82d4d5",
-    "activityBar.background": "#63a3a4",
-    "statusBar.background": "#6aaeaf",
-    "activityBar.activeBorder": "#000000",
-    "titleBar.activeForeground": "#000000",
-    "activityBarBadge.foreground": "#000000",
-    "commandCenter.border": "#000000"
-  },
-  "cSpell.words": ["Algorand"]
+    "files.associations": {
+        "*.rsh": "javascript"
+    },
+    "javascript.suggest.completeFunctionCalls": true,
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#82d4d5",
+        "activityBar.background": "#63a3a4",
+        "statusBar.background": "#6aaeaf",
+        "activityBar.activeBorder": "#000000",
+        "titleBar.activeForeground": "#000000",
+        "activityBarBadge.foreground": "#000000",
+        "commandCenter.border": "#000000"
+    },
+    "cSpell.words": [
+        "Algorand"
+    ]
 }

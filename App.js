@@ -7,6 +7,7 @@ import {
   TextInput,
 } from "react-native";
 import React, { useState } from "react";
+import { backend } from "./services/Backend";
 
 export default function App() {
   const [showRegisterInputs, setShowRegisterInputs] = useState(false);
@@ -49,7 +50,9 @@ export default function App() {
       return;
     }
 
-    console.log("Register");
+    await backend.registerUser(username, password, phone);
+    console.log(`Registered user ${username}`);
+    alert(`Registered user ${username}`);
   };
 
   const handleSignIn = () => {
@@ -65,7 +68,6 @@ export default function App() {
   };
 
   const handleBack = () => {
-    console.log("Back");
     setShowRegisterInputs(false);
     setShowSignInInputs(false);
   };
