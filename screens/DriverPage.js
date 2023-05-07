@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from "react-native";
 import { backend } from "../services/Backend";
 import { SocketClient } from "../services/SocketClient";
@@ -16,6 +17,25 @@ export default function DriverPage({ navigation, route }) {
     SocketClient.getInstance(user.username)
   );
   const [rides, setRides] = useState([]);
+
+  const bid = (rideId, amount) => {
+    if (amount.length === 0) {
+      alert("can't be empty");
+      return;
+    }
+
+    if (isNaN(amount)) {
+      alert("must be a number");
+      return;
+    }
+
+    backend
+      .bid(rideId, user.username, amount)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {});
+  };
 
   useEffect(() => {
     backend.getAllRequestedRides(user.username).then((rides) => {
@@ -30,7 +50,20 @@ export default function DriverPage({ navigation, route }) {
           <Text style={styles.column}>{item.passenger.username}</Text>
           <Text style={styles.column}>{moment(item.createdAt).fromNow()}</Text>
           <TouchableOpacity style={styles.button}>
-            <Text>Show More</Text>
+            <Text
+              onPress={() =>
+                Alert.prompt(
+                  "Bid:",
+                  "Enter your bid in ALGO",
+                  (msg) => bid(item._id, msg),
+                  undefined,
+                  undefined,
+                  "numeric"
+                )
+              }
+            >
+              Bid
+            </Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -39,13 +72,15 @@ export default function DriverPage({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Placeholder Page</Text>
-      <FlatList
-        data={rides}
-        renderItem={renderItem}
-        keyExtractor={(item) => item._id}
-        style={styles.list}
-      />
+      <Text style={styles.heading}>Drives Available</Text>
+      <View style={styles.listContainer}>
+        <FlatList
+          data={rides}
+          renderItem={renderItem}
+          keyExtractor={(item) => item._id}
+          style={styles.list}
+        />
+      </View>
     </View>
   );
 }
@@ -57,9 +92,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   heading: {
+    position: "absolute",
+    top: "10%",
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
+    zIndex: 1,
+  },
+  listContainer: {
+    flex: 1,
+    alignSelf: "stretch",
+    marginHorizontal: 10, // adjust as needed
+    marginTop: "40%",
   },
   list: {
     flex: 1,
