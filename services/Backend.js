@@ -33,5 +33,18 @@ class Backend {
       throw error;
     }
   };
+
+  addWallet = async (username, mnemonic) => {
+    try {
+      const response = await this.axios.post(`${this.url}/wallet`, {
+        username,
+        mnemonic,
+      });
+      return response.data;
+    } catch (error) {
+      console.warn("Error on wallet creation", JSON.stringify(error));
+      throw error;
+    }
+  };
 }
 export const backend = new Backend();

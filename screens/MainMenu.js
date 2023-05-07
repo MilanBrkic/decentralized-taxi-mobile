@@ -1,14 +1,67 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
+import { backend } from "../services/Backend";
+import { SocketClient } from "../services/SocketClient";
 
 export default function MainMenu({ navigation, route }) {
-  const { user } = route.params;
+  const [user, setUser] = useState(route.params.user);
+  const [socketClient, setSocketClient] = useState(
+    SocketClient.getInstance(user.username)
+  );
+  const [addingWallet, setAddingWallet] = useState(false);
+  const [mnemonic, setMnemonic] = useState("");
+
+  const handleAddWallet = () => {
+    setAddingWallet(true);
+  };
+
+  const handleConfirmMnemonic = async () => {
+    if (!mnemonic) {
+      alert("Please enter your Mnemonic");
+      return;
+    }
+    const userResponse = await backend.addWallet(user.username, mnemonic);
+    setAddingWallet(false);
+    setUser(userResponse);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>
-        Welcome {user.username}
-        {user.address ? " with balance of " + user.balance + " ALGO" : ""}
+      <Text style={styles.text}>Welcome {user.username}</Text>
+      <Text>
+        {user.address ? "Your address is " + user.address : "No address yet"}
       </Text>
+      <Text>{user.address ? "The balance is " + user.balance : ""}</Text>
+      {!user.address && !addingWallet && (
+        <TouchableOpacity style={styles.button} onPress={handleAddWallet}>
+          <Text style={styles.buttonText}>Add Wallet</Text>
+        </TouchableOpacity>
+      )}
+      {addingWallet && (
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your Mnemonic here"
+            multiline={true}
+            numberOfLines={3}
+            value={mnemonic}
+            returnKeyType="done"
+            onChangeText={setMnemonic}
+          />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleConfirmMnemonic}
+          >
+            <Text style={styles.buttonText}>Confirm Mnemonic</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -18,10 +71,40 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: "100%",
   },
   text: {
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  button: {
+    backgroundColor: "#2196F3",
+    width: 200,
+    height: 50,
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+  inputContainer: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  input: {
+    backgroundColor: "#f2f2f2",
+    width: 300,
+    height: 100,
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 20,
+    textAlignVertical: "top",
   },
 });
