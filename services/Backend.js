@@ -46,5 +46,31 @@ class Backend {
       throw error;
     }
   };
+
+  requestRide = async (username) => {
+    try {
+      const response = await this.axios.post(`${this.url}/ride`, {
+        username,
+      });
+      return response.data;
+    } catch (error) {
+      console.warn("Error on ride request", JSON.stringify(error));
+
+      throw error;
+    }
+  };
+
+  getAllRequestedRides = async (username) => {
+    try {
+      const response = await this.axios.get(
+        `${this.url}/ride/get-requested?username=${username}`
+      );
+      return response.data;
+    } catch (error) {
+      console.warn("Error on ride request", JSON.stringify(error));
+      alert(error.response?.data.message);
+      throw error;
+    }
+  };
 }
 export const backend = new Backend();

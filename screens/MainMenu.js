@@ -21,7 +21,15 @@ export default function MainMenu({ navigation, route }) {
     setAddingWallet(true);
   };
 
-  const handleRoleSelection = (isPassenger) => {};
+  const handleRoleSelection = async (isPassenger) => {
+    if (isPassenger) {
+      await backend.requestRide(user.username);
+      console.log("Ride requested");
+    } else {
+      const rides = await backend.getAllRequestedRides(user.username);
+      console.log(rides);
+    }
+  };
 
   const handleConfirmMnemonic = async () => {
     if (!mnemonic) {
