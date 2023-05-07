@@ -23,8 +23,11 @@ export default function MainMenu({ navigation, route }) {
 
   const handleRoleSelection = async (isPassenger) => {
     if (isPassenger) {
-      const userResponse = await backend.requestRide(user.username);
-      navigation.navigate("PassengerPage", { user });
+      ride = user.ridesAsPassenger.find((ride) => ride.status === "requested");
+      navigation.navigate("PassengerPage", {
+        user,
+        ride,
+      });
     } else {
       navigation.navigate("DriverPage", { user });
     }

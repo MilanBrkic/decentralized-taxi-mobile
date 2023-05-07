@@ -74,6 +74,17 @@ class Backend {
     }
   };
 
+  getRide = async (rideId) => {
+    try {
+      const response = await this.axios.get(`${this.url}/ride/${rideId}`);
+      return response.data;
+    } catch (error) {
+      console.warn("Error on ride request", JSON.stringify(error));
+      alert(error.response?.data.message);
+      throw error;
+    }
+  };
+
   bid = async (rideId, username, amount) => {
     try {
       const response = await this.axios.post(`${this.url}/ride/${rideId}/bid`, {
