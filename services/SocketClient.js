@@ -1,3 +1,4 @@
+import { Config } from "../Config";
 export class SocketClient {
   static instance;
   socket;
@@ -6,7 +7,7 @@ export class SocketClient {
       return SocketClient.instance;
     }
     // Create a new WebSocket client and connect to the server
-    this.socket = new WebSocket("ws://192.168.1.3:8080");
+    this.socket = new WebSocket(Config.SOCKET_URL);
 
     this.socket.onopen = () => {
       const data = { type: "connection", data: { username } };

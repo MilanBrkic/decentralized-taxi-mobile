@@ -1,7 +1,7 @@
 import { Config } from "../Config";
 import axios from "axios";
 class Backend {
-  url = Config.BACKEND_URL;
+  url = Config.SERVER_URL;
   axios = axios;
 
   registerUser = async (username, password, phone) => {

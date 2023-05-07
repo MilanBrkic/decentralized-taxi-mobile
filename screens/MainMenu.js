@@ -21,6 +21,10 @@ export default function MainMenu({ navigation, route }) {
     setAddingWallet(true);
   };
 
+  const handleRoleSelection = () => {
+    // socketClient.socket.send();
+  };
+
   const handleConfirmMnemonic = async () => {
     if (!mnemonic) {
       alert("Please enter your Mnemonic");
@@ -35,9 +39,33 @@ export default function MainMenu({ navigation, route }) {
     <View style={styles.container}>
       <Text style={styles.text}>Welcome {user.username}</Text>
       <Text>
-        {user.address ? "Your address is " + user.address : "No address yet"}
+        {user.address
+          ? "Your address is " +
+            user.address.substring(0, 5) +
+            "..." +
+            user.address.substring(user.address.length - 5)
+          : "No address yet"}
       </Text>
       <Text>{user.address ? "The balance is " + user.balance : ""}</Text>
+      {user.address && (
+        <>
+          <Text style={styles.label}>Choose your role:</Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handleRoleSelection(true)}
+            >
+              <Text style={styles.buttonText}>Passenger</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => handleRoleSelection(false)}
+            >
+              <Text style={styles.buttonText}>Driver</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
       {!user.address && !addingWallet && (
         <TouchableOpacity style={styles.button} onPress={handleAddWallet}>
           <Text style={styles.buttonText}>Add Wallet</Text>
@@ -80,7 +108,8 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#2196F3",
-    width: 200,
+    width: "30%",
+    margin: "2%",
     height: 50,
     padding: 10,
     borderRadius: 10,
@@ -106,5 +135,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
     textAlignVertical: "top",
+  },
+  label: {
+    marginTop: 20,
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 10,
   },
 });

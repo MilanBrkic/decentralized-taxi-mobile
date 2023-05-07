@@ -1,5 +1,6 @@
-import { BACKEND_URL } from "@env";
+import { SERVER_HOST, SERVER_PORT, SOCKET_PORT } from "@env";
 
 export const Config = {
-  BACKEND_URL: BACKEND_URL,
+  SERVER_URL: `http://${SERVER_HOST}:${SERVER_PORT}`,
+  SOCKET_URL: `ws://${SERVER_HOST}:${SOCKET_PORT}`,
 };
