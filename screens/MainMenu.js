@@ -21,9 +21,7 @@ export default function MainMenu({ navigation, route }) {
     setAddingWallet(true);
   };
 
-  const handleRoleSelection = () => {
-    // socketClient.socket.send();
-  };
+  const handleRoleSelection = (isPassenger) => {};
 
   const handleConfirmMnemonic = async () => {
     if (!mnemonic) {
