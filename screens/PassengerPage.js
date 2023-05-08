@@ -10,25 +10,47 @@ import { SocketClient } from "../services/SocketClient";
 import { backend } from "../services/Backend";
 
 export default function PassengerPage({ navigation, route }) {
+  const [ride, setRide] = useState(route.params.ride);
+  const [requestRideButton, setRequestRideButton] = useState(
+    ride ? false : true
+  );
   const [user, setUser] = useState(route.params.user);
   const [socketClient, setSocketClient] = useState(
     SocketClient.getInstance(user.username)
   );
-  const [ride, setRide] = useState(route.params.ride);
-  const [bids, setBids] = useState([]);
+  const [bids, setBids] = useState(ride ? ride.bids : []);
+  onRequestRide = async () => {
+    await backend.requestRide(user.username);
+    setRequestRideButton(false);
+    setSocketListener();
+  };
 
   useEffect(() => {
-    backend.getRide(ride._id).then((ride) => {
-      setBids(ride.bids);
-    });
+    if (!ride) {
+      backend.getUser(user.username).then((user) => {
+        setUser(user);
+        const requestedRide = user.ridesAsPassenger.find(
+          (ride) => ride.status === "requested"
+        );
+        if (!requestedRide) return;
+        setRide(requestedRide);
+        setBids(requestedRide.bids);
+        setRequestRideButton(!requestedRide);
+        setSocketListener();
+      });
+    } else {
+      setSocketListener();
+    }
+  }, []);
 
+  const setSocketListener = () => {
     socketClient.socket.onmessage = (message) => {
       const data = JSON.parse(message.data);
       if (data.type === "bid") {
         setBids(data.data);
       }
     };
-  }, []);
+  };
 
   const renderItem = ({ item }) => {
     return (
@@ -36,7 +58,7 @@ export default function PassengerPage({ navigation, route }) {
         <View style={styles.row}>
           <Text style={styles.column}>{item.username}</Text>
           <Text style={styles.column}>{item.amount / 1000000} ALGO</Text>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.buttonColumn}>
             <Text>Accept</Text>
           </TouchableOpacity>
         </View>
@@ -46,18 +68,31 @@ export default function PassengerPage({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Hello passenger {user.username}</Text>
-      <Text style={styles.heading2}>
-        Here are the bids on your ride request:
-      </Text>
-      <View style={styles.listContainer}>
-        <FlatList
-          data={bids || []}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.username}
-          style={styles.list}
-        />
-      </View>
+      {requestRideButton && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText} onPress={onRequestRide}>
+              Request{"\n"} Ride
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {!requestRideButton && (
+        <>
+          <Text style={styles.heading}>Hello passenger {user.username}</Text>
+          <Text style={styles.heading2}>
+            Here are the bids on your ride request:
+          </Text>
+          <View style={styles.listContainer}>
+            <FlatList
+              data={bids || []}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.username}
+              style={styles.list}
+            />
+          </View>
+        </>
+      )}
     </View>
   );
 }
@@ -107,10 +142,32 @@ const styles = StyleSheet.create({
   column: {
     flex: 1,
   },
-  button: {
+  buttonColumn: {
     paddingVertical: 5,
     paddingHorizontal: 10,
     backgroundColor: "lightgray",
     borderRadius: 5,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 15,
+  },
+  button: {
+    backgroundColor: "#2196F3",
+    width: "30%",
+    margin: "2%",
+    height: "30%",
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

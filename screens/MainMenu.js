@@ -26,6 +26,7 @@ export default function MainMenu({ navigation, route }) {
       const requestedRide = user.ridesAsPassenger.find(
         (ride) => ride.status === "requested"
       );
+
       navigation.navigate("PassengerPage", {
         user,
         ride: requestedRide,

@@ -98,5 +98,16 @@ class Backend {
       throw error;
     }
   };
+
+  getUser = async (username) => {
+    try {
+      const response = await this.axios.get(`${this.url}/user/${username}`);
+      return response.data;
+    } catch (error) {
+      console.warn("Error on get user", JSON.stringify(error));
+      alert(error.response?.data.message);
+      throw error;
+    }
+  };
 }
 export const backend = new Backend();
