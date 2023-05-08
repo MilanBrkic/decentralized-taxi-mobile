@@ -20,9 +20,18 @@ export default function PassengerPage({ navigation, route }) {
   );
   const [bids, setBids] = useState(ride ? ride.bids : []);
   onRequestRide = async () => {
-    await backend.requestRide(user.username);
+    const ride = await backend.requestRide(user.username);
+
+    setRide(ride);
+    setBids(ride.bids);
     setRequestRideButton(false);
     setSocketListener();
+  };
+
+  onCancelRide = async () => {
+    await backend.cancelRide(ride._id, user.username);
+    delete user.ridesAsPassenger;
+    navigation.navigate("MainMenu", { user });
   };
 
   useEffect(() => {
@@ -70,10 +79,8 @@ export default function PassengerPage({ navigation, route }) {
     <View style={styles.container}>
       {requestRideButton && (
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText} onPress={onRequestRide}>
-              Request{"\n"} Ride
-            </Text>
+          <TouchableOpacity style={styles.button} onPress={onRequestRide}>
+            <Text style={styles.buttonText}>Request{"\n"} Ride</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -90,6 +97,11 @@ export default function PassengerPage({ navigation, route }) {
               keyExtractor={(item) => item.username}
               style={styles.list}
             />
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={onCancelRide}>
+              <Text style={styles.buttonText}>Cancel Ride</Text>
+            </TouchableOpacity>
           </View>
         </>
       )}

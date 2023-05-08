@@ -109,5 +109,21 @@ class Backend {
       throw error;
     }
   };
+
+  cancelRide = async (rideId, username) => {
+    try {
+      const response = await this.axios.post(
+        `${this.url}/ride/${rideId}/cancel`,
+        {
+          username,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.warn("Error on cancel ride", JSON.stringify(error));
+      alert(error.response?.data.message);
+      throw error;
+    }
+  };
 }
 export const backend = new Backend();
