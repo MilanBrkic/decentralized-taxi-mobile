@@ -73,6 +73,16 @@ export default function Registration({ navigation }) {
 
       try {
         const user = await backend.login(username, password);
+        const requestedRide = user.ridesAsPassenger.find(
+          (ride) => ride.status === "requested"
+        );
+        if (requestedRide) {
+          navigation.navigate("PassengerPage", {
+            user,
+            ride: requestedRide,
+          });
+          return;
+        }
         navigation.navigate("MainMenu", { user });
       } catch (error) {
         alert("Error when logging in: " + error.response.data.message);

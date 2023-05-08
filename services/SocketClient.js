@@ -40,7 +40,7 @@ export class SocketClient {
     };
 
     this.socket.onmessage = (e) => {
-      console.log("Socket message received:", e.data);
+      console.log("Socket message received:", e);
     };
 
     this.socket.onerror = (e) => {

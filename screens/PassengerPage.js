@@ -7,6 +7,7 @@ import {
   FlatList,
 } from "react-native";
 import { SocketClient } from "../services/SocketClient";
+import { backend } from "../services/Backend";
 
 export default function PassengerPage({ navigation, route }) {
   const [user, setUser] = useState(route.params.user);
@@ -14,6 +15,20 @@ export default function PassengerPage({ navigation, route }) {
     SocketClient.getInstance(user.username)
   );
   const [ride, setRide] = useState(route.params.ride);
+  const [bids, setBids] = useState([]);
+
+  useEffect(() => {
+    backend.getRide(ride._id).then((ride) => {
+      setBids(ride.bids);
+    });
+
+    socketClient.socket.onmessage = (message) => {
+      const data = JSON.parse(message.data);
+      if (data.type === "bid") {
+        setBids(data.data);
+      }
+    };
+  }, []);
 
   const renderItem = ({ item }) => {
     return (
@@ -31,10 +46,13 @@ export default function PassengerPage({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Bids</Text>
+      <Text style={styles.heading}>Hello passenger {user.username}</Text>
+      <Text style={styles.heading2}>
+        Here are the bids on your ride request:
+      </Text>
       <View style={styles.listContainer}>
         <FlatList
-          data={ride?.bids || []}
+          data={bids || []}
           renderItem={renderItem}
           keyExtractor={(item) => item.username}
           style={styles.list}
@@ -53,7 +71,14 @@ const styles = StyleSheet.create({
   heading: {
     position: "absolute",
     top: "10%",
-    fontSize: 24,
+    fontSize: 20,
+    fontWeight: "bold",
+    zIndex: 1,
+  },
+  heading2: {
+    position: "absolute",
+    top: "15%",
+    fontSize: 18,
     fontWeight: "bold",
     zIndex: 1,
   },
