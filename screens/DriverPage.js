@@ -41,6 +41,15 @@ export default function DriverPage({ navigation, route }) {
     backend.getAllRequestedRides(user.username).then((rides) => {
       setRides(rides);
     });
+
+    socketClient.socket.onmessage = (message) => {
+      const data = JSON.parse(message.data);
+      if (data.type === "ride_requested") {
+        setRides((rides) => [data.data, ...rides]);
+      } else if (data.type === "ride_canceled") {
+        setRides((rides) => rides.filter((ride) => ride._id !== data.data._id));
+      }
+    };
   }, []);
 
   const renderItem = ({ item }) => {
