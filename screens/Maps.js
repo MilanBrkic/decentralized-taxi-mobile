@@ -7,14 +7,10 @@ import {
   Keyboard,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import * as Location from "expo-location";
-import Geocoder from "react-native-geocoding";
-import { Config } from "../Config";
 import Autocomplete from "react-native-autocomplete-input";
+import { locationService } from "../services/LocationService";
 
-Geocoder.init(Config.GOOGLE_MAPS_API_KEY);
-
-export const MapScreen = ({ onMarkerChange }) => {
+const MapScreen = ({ onMarkerChange }) => {
   const [region, setRegion] = useState(null);
   const [marker, setMarker] = useState(null);
   const [address, setAddress] = useState("");
@@ -24,13 +20,8 @@ export const MapScreen = ({ onMarkerChange }) => {
 
   useEffect(() => {
     const getLocation = async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
-        return;
-      }
-      const location = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = location.coords;
+      const { latitude, longitude } =
+        await locationService.getUsersCurrentPosition();
       setRegion({
         latitude,
         longitude,
@@ -73,7 +64,7 @@ export const MapScreen = ({ onMarkerChange }) => {
     setAddress(text);
     try {
       if (text.length > 3) {
-        const result = await Geocoder.from(text);
+        const result = await locationService.getPlaceSuggestions(text);
         const suggestions = [];
         for (let i = 0; i < 3; i++) {
           if (result.results[i]) {

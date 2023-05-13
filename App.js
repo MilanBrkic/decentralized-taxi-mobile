@@ -4,7 +4,6 @@ import Registration from "./screens/Registration";
 import MainMenu from "./screens/MainMenu";
 import PassengerPage from "./screens/PassengerPage";
 import DriverPage from "./screens/DriverPage";
-import Maps from "./screens/Maps";
 
 const Stack = createStackNavigator();
 

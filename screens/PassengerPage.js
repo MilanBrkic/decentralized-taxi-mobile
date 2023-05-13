@@ -10,6 +10,7 @@ import {
 import { SocketClient } from "../services/SocketClient";
 import { backend } from "../services/Backend";
 import MapScreen from "./Maps";
+import { locationService } from "../services/LocationService";
 
 export default function PassengerPage({ navigation, route }) {
   const [ride, setRide] = useState(
@@ -52,7 +53,17 @@ export default function PassengerPage({ navigation, route }) {
   };
 
   requestRide = async () => {
-    const ride = await backend.requestRide(user.username);
+    if (!marker && !marker.latitude && !marker.longitude) {
+      return;
+    }
+
+    const fromCoordinates = await locationService.getUsersCurrentPosition();
+
+    const ride = await backend.requestRide(user.username, fromCoordinates, {
+      latitude: marker.latitude,
+      longitude: marker.longitude,
+    });
+
     setRide(ride);
     setBids(ride.bids);
     setRequestRideButton(false);

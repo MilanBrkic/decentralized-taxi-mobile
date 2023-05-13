@@ -47,10 +47,12 @@ class Backend {
     }
   };
 
-  requestRide = async (username) => {
+  requestRide = async (username, fromCoordinates, toCoordinates) => {
     try {
       const response = await this.axios.post(`${this.url}/ride`, {
         username,
+        from_coordinates: fromCoordinates,
+        to_coordinates: toCoordinates,
       });
       return response.data;
     } catch (error) {
