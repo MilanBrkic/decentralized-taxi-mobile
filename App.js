@@ -36,11 +36,6 @@ export default function App() {
           component={DriverPage}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="Maps"
-          component={Maps}
-          options={{ headerShown: false }}
-        />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -165,9 +165,6 @@ export default function Registration({ navigation }) {
           <TouchableOpacity style={styles.button} onPress={handleSignIn}>
             <Text style={styles.buttonText}>Sign In</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleMapsTemp}>
-            <Text style={styles.buttonText}>Maps</Text>
-          </TouchableOpacity>
         </>
       )}
 

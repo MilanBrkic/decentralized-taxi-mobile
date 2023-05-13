@@ -5,9 +5,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from "react-native";
 import { SocketClient } from "../services/SocketClient";
 import { backend } from "../services/Backend";
+import MapScreen from "./Maps";
 
 export default function PassengerPage({ navigation, route }) {
   const [ride, setRide] = useState(
@@ -21,9 +23,36 @@ export default function PassengerPage({ navigation, route }) {
     SocketClient.getInstance(user.username)
   );
   const [bids, setBids] = useState(ride ? ride.bids : []);
-  onRequestRide = async () => {
-    const ride = await backend.requestRide(user.username);
+  const [marker, setMarker] = useState(null);
 
+  onMarkerChange = (marker) => {
+    setMarker(marker);
+  };
+
+  onRequestRidePress = async () => {
+    if (!marker) {
+      Alert.alert("Request Ride", "Please select a destination");
+    } else {
+      Alert.alert(
+        "Request Ride",
+        `Are you sure you want to request a ride to ${marker.title} ?`,
+        [
+          {
+            text: "Yes",
+            onPress: async () => {
+              requestRide();
+            },
+          },
+          {
+            text: "No",
+          },
+        ]
+      );
+    }
+  };
+
+  requestRide = async () => {
+    const ride = await backend.requestRide(user.username);
     setRide(ride);
     setBids(ride.bids);
     setRequestRideButton(false);
@@ -83,11 +112,29 @@ export default function PassengerPage({ navigation, route }) {
   return (
     <View style={styles.container}>
       {requestRideButton && (
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={onRequestRide}>
-            <Text style={styles.buttonText}>Request{"\n"} Ride</Text>
-          </TouchableOpacity>
-        </View>
+        <>
+          <View style={{ flex: 1, width: "100%" }}>
+            <View style={{ marginTop: "10%", flex: 0.75 }}>
+              <MapScreen onMarkerChange={onMarkerChange} />
+            </View>
+            <View
+              style={{
+                ...styles.buttonContainer,
+                flex: 0.25,
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <TouchableOpacity
+                style={styles.button}
+                onPress={onRequestRidePress}
+              >
+                <Text style={styles.buttonText}>Request Ride</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
       )}
       {!requestRideButton && (
         <>
@@ -164,6 +211,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: "lightgray",
     borderRadius: 5,
+  },
+  requestRideContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 10,
   },
   buttonContainer: {
     flexDirection: "row",

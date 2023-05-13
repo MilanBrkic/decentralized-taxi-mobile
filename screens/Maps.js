@@ -14,7 +14,7 @@ import Autocomplete from "react-native-autocomplete-input";
 
 Geocoder.init(Config.GOOGLE_MAPS_API_KEY);
 
-const MapScreen = () => {
+export const MapScreen = ({ onMarkerChange }) => {
   const [region, setRegion] = useState(null);
   const [marker, setMarker] = useState(null);
   const [address, setAddress] = useState("");
@@ -43,6 +43,12 @@ const MapScreen = () => {
     getLocation();
   }, []);
 
+  useEffect(() => {
+    if (marker) {
+      onMarkerChange(marker);
+    }
+  }, [marker]);
+
   const onSuggestionPress = async (suggestion) => {
     setAddress(suggestion.address);
     const lat = suggestion.lat;
@@ -68,7 +74,6 @@ const MapScreen = () => {
     try {
       if (text.length > 3) {
         const result = await Geocoder.from(text);
-        console.log(JSON.stringify(result));
         const suggestions = [];
         for (let i = 0; i < 3; i++) {
           if (result.results[i]) {
