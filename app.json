@@ -11,11 +11,15 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationAlwaysUsageDescription": "This app needs to access your location to provide you with the best experience.",
+        "NSLocationUsageDescription": "This app needs to access your location to provide you with the best experience.",
+        "NSLocationWhenInUseUsageDescription": "This app needs to access your location to provide you with the best experience.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app needs access to your location always to provide you the best user experience."
+      }
     },
     "android": {
       "adaptiveIcon": {

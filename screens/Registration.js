@@ -90,6 +90,10 @@ export default function Registration({ navigation }) {
     }
   };
 
+  const handleMapsTemp = () => {
+    navigation.navigate("Maps");
+  };
+
   const handleBack = () => {
     setShowRegisterInputs(false);
     setShowSignInInputs(false);
@@ -160,6 +164,9 @@ export default function Registration({ navigation }) {
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleSignIn}>
             <Text style={styles.buttonText}>Sign In</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleMapsTemp}>
+            <Text style={styles.buttonText}>Maps</Text>
           </TouchableOpacity>
         </>
       )}

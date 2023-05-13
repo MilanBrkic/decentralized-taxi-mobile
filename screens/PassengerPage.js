@@ -10,7 +10,9 @@ import { SocketClient } from "../services/SocketClient";
 import { backend } from "../services/Backend";
 
 export default function PassengerPage({ navigation, route }) {
-  const [ride, setRide] = useState(route.params.ride);
+  const [ride, setRide] = useState(
+    route.params.ride ? route.params.ride : null
+  );
   const [requestRideButton, setRequestRideButton] = useState(
     ride ? false : true
   );
@@ -31,6 +33,9 @@ export default function PassengerPage({ navigation, route }) {
   onCancelRide = async () => {
     await backend.cancelRide(ride._id, user.username);
     delete user.ridesAsPassenger;
+    setRide(null);
+    setRequestRideButton(true);
+    setBids([]);
     navigation.navigate("MainMenu", { user });
   };
 

@@ -29,7 +29,6 @@ export default function MainMenu({ navigation, route }) {
 
       navigation.navigate("PassengerPage", {
         user,
-        ride: requestedRide,
       });
     } else {
       navigation.navigate("DriverPage", { user });
