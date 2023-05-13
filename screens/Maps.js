@@ -63,7 +63,7 @@ const MapScreen = ({ onMarkerChange }) => {
   const handleTextChange = async (text) => {
     setAddress(text);
     try {
-      if (text.length > 3) {
+      if (text.length > 5) {
         const result = await locationService.getPlaceSuggestions(text);
         const suggestions = [];
         for (let i = 0; i < 3; i++) {

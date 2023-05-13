@@ -18,25 +18,6 @@ export default function DriverPage({ navigation, route }) {
   );
   const [rides, setRides] = useState([]);
 
-  const bid = (rideId, amount) => {
-    if (amount.length === 0) {
-      alert("can't be empty");
-      return;
-    }
-
-    if (isNaN(amount)) {
-      alert("must be a number");
-      return;
-    }
-
-    backend
-      .bid(rideId, user.username, amount)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {});
-  };
-
   useEffect(() => {
     backend.getAllRequestedRides(user.username).then((rides) => {
       setRides(rides);
@@ -61,17 +42,10 @@ export default function DriverPage({ navigation, route }) {
           <TouchableOpacity style={styles.button}>
             <Text
               onPress={() =>
-                Alert.prompt(
-                  "Bid:",
-                  "Enter your bid in ALGO",
-                  (msg) => bid(item._id, msg),
-                  undefined,
-                  undefined,
-                  "numeric"
-                )
+                navigation.navigate("DriveDetailsPage", { user, ride: item })
               }
             >
-              Bid
+              More
             </Text>
           </TouchableOpacity>
         </View>

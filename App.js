@@ -4,6 +4,7 @@ import Registration from "./screens/Registration";
 import MainMenu from "./screens/MainMenu";
 import PassengerPage from "./screens/PassengerPage";
 import DriverPage from "./screens/DriverPage";
+import DriveDetailsPage from "./screens/DriveDetailsPage";
 
 const Stack = createStackNavigator();
 
@@ -33,6 +34,11 @@ export default function App() {
         <Stack.Screen
           name="DriverPage"
           component={DriverPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="DriveDetailsPage"
+          component={DriveDetailsPage}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
