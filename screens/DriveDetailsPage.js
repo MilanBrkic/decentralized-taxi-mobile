@@ -77,10 +77,12 @@ export default function DriveDetailsPage({ navigation, route }) {
           currentMarker={{
             latitude: ride.fromCoordinates.latitude,
             longitude: ride.fromCoordinates.longitude,
+            title: ride.fromCoordinates.title,
           }}
           destinationMarker={{
             latitude: ride.toCoordinates.latitude,
             longitude: ride.toCoordinates.longitude,
+            title: ride.toCoordinates.title,
           }}
         />
       </View>

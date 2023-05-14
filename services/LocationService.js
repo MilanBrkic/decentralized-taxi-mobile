@@ -16,11 +16,24 @@ class LocationService {
       accuracy: locationAccuracy,
     });
     const { latitude, longitude } = location.coords;
-    return { latitude, longitude };
+    const title = await this.getPlaceFromCoordinates({ latitude, longitude });
+    return { latitude, longitude, title };
   }
 
   async getPlaceSuggestions(address) {
     return Geocoder.from(address);
+  }
+
+  async getPlaceFromCoordinates(coordinates) {
+    try {
+      const result = await Geocoder.from(coordinates);
+      return result.results[0].formatted_address;
+    } catch (error) {
+      if (error?.origin?.status !== "ZERO_RESULTS") {
+        console.log(error);
+        throw error;
+      }
+    }
   }
 }
 

@@ -25,15 +25,16 @@ const MapScreen = ({
   const mapRef = useRef();
 
   const getLocation = async () => {
-    const { latitude, longitude } =
+    const { latitude, longitude, title } =
       await locationService.getUsersCurrentPosition();
+
     setRegion({
       latitude,
       longitude,
       latitudeDelta: 0.01,
       longitudeDelta: 0.01,
     });
-    setUserCoordinates({ latitude, longitude });
+    setUserCoordinates({ latitude, longitude, title });
     setMarker(null);
     Keyboard.dismiss();
   };
@@ -101,7 +102,6 @@ const MapScreen = ({
       if (error?.origin?.status !== "ZERO_RESULTS") {
         console.log(error);
         throw error;
-        // setSuggestions([])
       }
     }
   };
@@ -122,7 +122,8 @@ const MapScreen = ({
           {!isPassenger && currentMarker && (
             <Marker
               coordinate={currentMarker}
-              title={"Current Passenger location"}
+              title={currentMarker.title}
+              description={"Passenger location"}
               pinColor="red"
             />
           )}
@@ -130,7 +131,8 @@ const MapScreen = ({
           {!isPassenger && destinationMarker && (
             <Marker
               coordinate={destinationMarker}
-              title={"Destination location"}
+              title={destinationMarker.title}
+              description={"Destination location"}
               pinColor="blue"
             />
           )}

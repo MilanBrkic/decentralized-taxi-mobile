@@ -55,6 +55,7 @@ export default function PassengerPage({ navigation, route }) {
     const ride = await backend.requestRide(user.username, fromCoordinates, {
       latitude: marker.latitude,
       longitude: marker.longitude,
+      title: marker.title,
     });
 
     setRide(ride);
