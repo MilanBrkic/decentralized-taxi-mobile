@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -10,27 +10,47 @@ import MapView, { Marker } from "react-native-maps";
 import Autocomplete from "react-native-autocomplete-input";
 import { locationService } from "../services/LocationService";
 
-const MapScreen = ({ onMarkerChange }) => {
+const MapScreen = ({
+  onMarkerChange,
+  isPassenger,
+  currentMarker,
+  destinationMarker,
+}) => {
   const [region, setRegion] = useState(null);
   const [marker, setMarker] = useState(null);
   const [address, setAddress] = useState("");
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  const [coordinates, setCoordinates] = useState([]);
+  const [userCoordinates, setUserCoordinates] = useState(null);
+  const mapRef = useRef();
+
+  const getLocation = async () => {
+    const { latitude, longitude } =
+      await locationService.getUsersCurrentPosition();
+    setRegion({
+      latitude,
+      longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    });
+    setUserCoordinates({ latitude, longitude });
+    setMarker(null);
+    Keyboard.dismiss();
+  };
+
+  const fitToCoordinates = (ref) => {
+    if (ref.current && !isPassenger && currentMarker && destinationMarker) {
+      ref.current.fitToCoordinates(
+        [userCoordinates, currentMarker, destinationMarker],
+        {
+          edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+          animated: true,
+        }
+      );
+    }
+  };
 
   useEffect(() => {
-    const getLocation = async () => {
-      const { latitude, longitude } =
-        await locationService.getUsersCurrentPosition();
-      setRegion({
-        latitude,
-        longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      });
-      setCoordinates([{ latitude, longitude }]);
-      Keyboard.dismiss();
-    };
     getLocation();
   }, []);
 
@@ -55,8 +75,7 @@ const MapScreen = ({ onMarkerChange }) => {
       latitudeDelta: 0.01,
       longitudeDelta: 0.01,
     });
-    coordinates[1] = { latitude: lat, longitude: lng };
-    setCoordinates(coordinates);
+
     setSuggestions([]);
   };
 
@@ -90,29 +109,53 @@ const MapScreen = ({ onMarkerChange }) => {
   return (
     <View style={styles.container}>
       {region && (
-        <MapView style={styles.map} region={region} showsUserLocation={true}>
+        <MapView
+          ref={mapRef}
+          style={styles.map}
+          region={region}
+          showsUserLocation={true}
+          onMapReady={() => fitToCoordinates(mapRef)}
+        >
           {marker && (
             <Marker coordinate={marker} title={marker.title} pinColor="red" />
           )}
+          {!isPassenger && currentMarker && (
+            <Marker
+              coordinate={currentMarker}
+              title={"Current Passenger location"}
+              pinColor="red"
+            />
+          )}
+
+          {!isPassenger && destinationMarker && (
+            <Marker
+              coordinate={destinationMarker}
+              title={"Destination location"}
+              pinColor="blue"
+            />
+          )}
         </MapView>
       )}
-      <View style={styles.inputContainer}>
-        <Autocomplete
-          style={styles.textInput}
-          placeholder="Enter address"
-          value={address}
-          onChangeText={handleTextChange}
-          data={suggestions}
-          flatListProps={{
-            keyExtractor: (_, idx) => idx,
-            renderItem: ({ item }) => (
-              <TouchableOpacity onPress={() => onSuggestionPress(item)}>
-                <Text>{item.address}</Text>
-              </TouchableOpacity>
-            ),
-          }}
-        />
-      </View>
+      {isPassenger && (
+        <View style={styles.inputContainer}>
+          <Autocomplete
+            style={styles.textInput}
+            placeholder="Enter address"
+            value={address}
+            onChangeText={handleTextChange}
+            data={suggestions}
+            flatListProps={{
+              keyExtractor: (_, idx) => idx,
+              renderItem: ({ item }) => (
+                <TouchableOpacity onPress={() => onSuggestionPress(item)}>
+                  <Text>{item.address}</Text>
+                </TouchableOpacity>
+              ),
+            }}
+          />
+        </View>
+      )}
+
       {keyboardVisible && (
         <Text style={styles.hintText}>
           Tap outside the input to dismiss keyboard

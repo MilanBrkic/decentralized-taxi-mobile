@@ -1,8 +1,9 @@
 import { backend } from "../services/Backend";
-import { SocketClient } from "../services/SocketClient";
-import { useState } from "react";
-import { Text, Alert, StyleSheet, View } from "react-native";
+import { SocketClient, MessageType } from "../services/SocketClient";
+import { useEffect, useState } from "react";
+import { Text, Alert, StyleSheet, View, TouchableOpacity } from "react-native";
 import { BidsComponent } from "../components/BidsComponent";
+import MapScreen from "./Maps";
 
 export default function DriveDetailsPage({ navigation, route }) {
   const [user, setUser] = useState(route.params.user);
@@ -10,6 +11,19 @@ export default function DriveDetailsPage({ navigation, route }) {
     SocketClient.getInstance(user.username)
   );
   const [ride, setRide] = useState(route.params.ride);
+
+  useEffect(() => {
+    socketClient.socket.onmessage = (message) => {
+      const data = JSON.parse(message.data);
+      if (
+        data.type === MessageType.RideCanceled &&
+        ride &&
+        ride._id === data.data._id
+      ) {
+        navigation.navigate("MainMenu", { user });
+      }
+    };
+  }, []);
 
   const bid = (rideId, amount) => {
     if (amount.length === 0) {
@@ -39,7 +53,7 @@ export default function DriveDetailsPage({ navigation, route }) {
       });
   };
 
-  const onPromptPress = () => {};
+  const onBidPress = () => {};
 
   return (
     <View style={styles.container}>
@@ -48,9 +62,28 @@ export default function DriveDetailsPage({ navigation, route }) {
       </Text>
       <Text style={styles.heading2}>Here are the bids on this ride:</Text>
       <BidsComponent ride={ride} isPassenger={false} username={user.username} />
+      <View style={{ flex: 1, width: "80%", marginTop: 0 }}>
+        <MapScreen
+          isPassenger={false}
+          currentMarker={{
+            latitude: ride.fromCoordinates.latitude,
+            longitude: ride.fromCoordinates.longitude,
+          }}
+          destinationMarker={{
+            latitude: ride.toCoordinates.latitude,
+            longitude: ride.toCoordinates.longitude,
+          }}
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={onBidPress}>
+          <Text style={styles.buttonText}>Bid</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -59,7 +92,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     position: "absolute",
-    top: "10%",
+    top: "5%",
     fontSize: 24,
     fontWeight: "bold",
     zIndex: 1,
@@ -79,7 +112,7 @@ const styles = StyleSheet.create({
   },
   heading2: {
     position: "absolute",
-    top: "15%",
+    top: "10%",
     fontSize: 18,
     fontWeight: "bold",
     zIndex: 1,
@@ -97,9 +130,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   button: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    backgroundColor: "lightgray",
-    borderRadius: 5,
+    backgroundColor: "#2196F3",
+    width: 200,
+    height: 50,
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 20,
+    marginBottom: "15%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 10,
   },
 });

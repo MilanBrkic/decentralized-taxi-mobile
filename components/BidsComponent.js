@@ -7,7 +7,7 @@ import {
   Text,
 } from "react-native";
 import { backend } from "../services/Backend";
-import { SocketClient } from "../services/SocketClient";
+import { MessageType, SocketClient } from "../services/SocketClient";
 
 export const BidsComponent = ({ ride, username, isPassenger }) => {
   const [bids, setBids] = useState(ride ? ride.bids : []);
@@ -24,7 +24,11 @@ export const BidsComponent = ({ ride, username, isPassenger }) => {
   const setSocketListener = () => {
     socketClient.socket.onmessage = (message) => {
       const data = JSON.parse(message.data);
-      if (data.type === "bid" && ride && ride._id === data.data.rideId) {
+      if (
+        data.type === MessageType.Bid &&
+        ride &&
+        ride._id === data.data.rideId
+      ) {
         setBids(data.data.bids);
       }
     };

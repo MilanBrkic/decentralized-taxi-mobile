@@ -58,7 +58,6 @@ export default function PassengerPage({ navigation, route }) {
     });
 
     setRide(ride);
-    setBids(ride.bids);
     setRequestRideButton(false);
   };
 
@@ -67,7 +66,6 @@ export default function PassengerPage({ navigation, route }) {
     delete user.ridesAsPassenger;
     setRide(null);
     setRequestRideButton(true);
-    setBids([]);
     navigation.navigate("MainMenu", { user });
   };
 
@@ -80,7 +78,6 @@ export default function PassengerPage({ navigation, route }) {
         );
         if (!requestedRide) return;
         setRide(requestedRide);
-        setBids(requestedRide.bids);
         setRequestRideButton(!requestedRide);
       });
     }
@@ -92,7 +89,7 @@ export default function PassengerPage({ navigation, route }) {
         <>
           <View style={{ flex: 1, width: "100%" }}>
             <View style={{ marginTop: "10%", flex: 0.75 }}>
-              <MapScreen onMarkerChange={onMarkerChange} />
+              <MapScreen onMarkerChange={onMarkerChange} isPassenger={true} />
             </View>
             <View
               style={{

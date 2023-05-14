@@ -7,7 +7,7 @@ import {
   FlatList,
 } from "react-native";
 import { backend } from "../services/Backend";
-import { SocketClient } from "../services/SocketClient";
+import { MessageType, SocketClient } from "../services/SocketClient";
 import moment from "moment";
 
 export default function DriverPage({ navigation, route }) {
@@ -24,9 +24,9 @@ export default function DriverPage({ navigation, route }) {
 
     socketClient.socket.onmessage = (message) => {
       const data = JSON.parse(message.data);
-      if (data.type === "ride_requested") {
+      if (data.type === MessageType.RideRequested) {
         setRides((rides) => [data.data, ...rides]);
-      } else if (data.type === "ride_canceled") {
+      } else if (data.type === MessageType.RideCanceled) {
         setRides((rides) => rides.filter((ride) => ride._id !== data.data._id));
       }
     };

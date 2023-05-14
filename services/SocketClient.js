@@ -67,3 +67,9 @@ export class SocketClient {
     }
   }
 }
+
+export const MessageType = {
+  Bid: "bid",
+  RideRequested: "ride_requested",
+  RideCanceled: "ride_canceled",
+};
