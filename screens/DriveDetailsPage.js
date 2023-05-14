@@ -1,13 +1,15 @@
 import { backend } from "../services/Backend";
 import { SocketClient } from "../services/SocketClient";
-import { useState, useEffect } from "react";
-import { Text, Alert, StyleSheet } from "react-native";
+import { useState } from "react";
+import { Text, Alert, StyleSheet, View } from "react-native";
+import { BidsComponent } from "../components/BidsComponent";
+
 export default function DriveDetailsPage({ navigation, route }) {
   const [user, setUser] = useState(route.params.user);
   const [socketClient, setSocketClient] = useState(
     SocketClient.getInstance(user.username)
   );
-  const [rides, setRides] = useState(route.params.ride);
+  const [ride, setRide] = useState(route.params.ride);
 
   const bid = (rideId, amount) => {
     if (amount.length === 0) {
@@ -39,7 +41,15 @@ export default function DriveDetailsPage({ navigation, route }) {
 
   const onPromptPress = () => {};
 
-  return <Text>Cao</Text>;
+  return (
+    <View style={styles.container}>
+      <Text style={styles.heading}>
+        Requesting ride: {ride.passenger.username}
+      </Text>
+      <Text style={styles.heading2}>Here are the bids on this ride:</Text>
+      <BidsComponent ride={ride} isPassenger={false} username={user.username} />
+    </View>
+  );
 }
 const styles = StyleSheet.create({
   container: {
@@ -66,6 +76,13 @@ const styles = StyleSheet.create({
   },
   rowContainer: {
     alignSelf: "stretch",
+  },
+  heading2: {
+    position: "absolute",
+    top: "15%",
+    fontSize: 18,
+    fontWeight: "bold",
+    zIndex: 1,
   },
   row: {
     flexDirection: "row",

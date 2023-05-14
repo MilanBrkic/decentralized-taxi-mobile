@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Text,
 } from "react-native";
+import { backend } from "../services/Backend";
 import { SocketClient } from "../services/SocketClient";
 
 export const BidsComponent = ({ ride, username, isPassenger }) => {
@@ -14,6 +15,9 @@ export const BidsComponent = ({ ride, username, isPassenger }) => {
     SocketClient.getInstance(username)
   );
   useEffect(() => {
+    backend.getRide(ride._id).then((ride) => {
+      setBids(ride.bids);
+    });
     setSocketListener();
   }, []);
 

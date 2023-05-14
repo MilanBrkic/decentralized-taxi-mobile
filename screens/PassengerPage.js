@@ -17,7 +17,6 @@ export default function PassengerPage({ navigation, route }) {
   const [socketClient, setSocketClient] = useState(
     SocketClient.getInstance(user.username)
   );
-  const [bids, setBids] = useState(ride ? ride.bids : []);
   const [marker, setMarker] = useState(null);
 
   onMarkerChange = (marker) => {

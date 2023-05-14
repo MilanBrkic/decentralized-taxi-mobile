@@ -90,10 +90,6 @@ export default function Registration({ navigation }) {
     }
   };
 
-  const handleMapsTemp = () => {
-    navigation.navigate("Maps");
-  };
-
   const handleBack = () => {
     setShowRegisterInputs(false);
     setShowSignInInputs(false);

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  Alert,
 } from "react-native";
 import { backend } from "../services/Backend";
 import { SocketClient } from "../services/SocketClient";
@@ -39,14 +38,13 @@ export default function DriverPage({ navigation, route }) {
         <View style={styles.row}>
           <Text style={styles.column}>{item.passenger.username}</Text>
           <Text style={styles.column}>{moment(item.createdAt).fromNow()}</Text>
-          <TouchableOpacity style={styles.button}>
-            <Text
-              onPress={() =>
-                navigation.navigate("DriveDetailsPage", { user, ride: item })
-              }
-            >
-              More
-            </Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() =>
+              navigation.navigate("DriveDetailsPage", { user, ride: item })
+            }
+          >
+            <Text>More</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
