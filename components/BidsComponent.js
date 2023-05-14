@@ -18,21 +18,18 @@ export const BidsComponent = ({ ride, username, isPassenger }) => {
     backend.getRide(ride._id).then((ride) => {
       setBids(ride.bids);
     });
-    setSocketListener();
-  }, []);
 
-  const setSocketListener = () => {
-    socketClient.socket.onmessage = (message) => {
-      const data = JSON.parse(message.data);
-      if (
-        data.type === MessageType.Bid &&
-        ride &&
-        ride._id === data.data.rideId
-      ) {
-        setBids(data.data.bids);
+    socketClient.addEventHandler(MessageType.Bid, (data) => {
+      const realData = data.data;
+      if (ride && ride._id === realData.rideId) {
+        setBids(realData.bids);
       }
+    });
+
+    return () => {
+      socketClient.removeEventHandler(MessageType.Bid);
     };
-  };
+  }, []);
 
   const renderItem = ({ item }) => {
     return (

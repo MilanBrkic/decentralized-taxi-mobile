@@ -5,9 +5,10 @@ import MainMenu from "./screens/MainMenu";
 import PassengerPage from "./screens/PassengerPage";
 import DriverPage from "./screens/DriverPage";
 import DriveDetailsPage from "./screens/DriveDetailsPage";
+import { Config } from "./Config";
 
 const Stack = createStackNavigator();
-
+console.log(Config.SERVER_URL);
 export default function App() {
   return (
     <NavigationContainer>

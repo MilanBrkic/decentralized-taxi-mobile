@@ -4,6 +4,7 @@ export class SocketClient {
   static instance;
   socket;
   isReconnecting;
+  events = new Map();
 
   constructor(username) {
     if (SocketClient.instance) {
@@ -40,7 +41,20 @@ export class SocketClient {
     };
 
     this.socket.onmessage = (e) => {
-      console.log("Socket message received:", e);
+      let data;
+      try {
+        data = JSON.parse(e.data);
+      } catch (error) {
+        console.log("Unsupported message format", e);
+        return;
+      }
+
+      const event = this.events.get(data.type);
+      if (event) {
+        event(data);
+      } else {
+        console.log("Unsupported message type", data.type);
+      }
     };
 
     this.socket.onerror = (e) => {
@@ -50,6 +64,14 @@ export class SocketClient {
       }
     };
   }
+
+  addEventHandler = (type, eventHandlers) => {
+    this.events.set(type, eventHandlers);
+  };
+
+  removeEventHandler = (type) => {
+    this.events.delete(type);
+  };
 
   reconnect() {
     this.isReconnecting = true;

@@ -13,15 +13,15 @@ export default function DriveDetailsPage({ navigation, route }) {
   const [ride, setRide] = useState(route.params.ride);
 
   useEffect(() => {
-    socketClient.socket.onmessage = (message) => {
-      const data = JSON.parse(message.data);
-      if (
-        data.type === MessageType.RideCanceled &&
-        ride &&
-        ride._id === data.data._id
-      ) {
+    socketClient.addEventHandler(MessageType.RideCanceled, (data) => {
+      const realData = data.data;
+      if (ride && ride._id === realData._id) {
         navigation.navigate("MainMenu", { user });
       }
+    });
+
+    return () => {
+      socketClient.removeEventHandler(MessageType.RideCanceled);
     };
   }, []);
 
@@ -45,7 +45,7 @@ export default function DriveDetailsPage({ navigation, route }) {
         Alert.prompt(
           "Bid:",
           "Enter your bid in ALGO",
-          (msg) => bid(item._id, msg),
+          (msg) => bid(ride._id, msg),
           undefined,
           undefined,
           "numeric"
@@ -53,7 +53,16 @@ export default function DriveDetailsPage({ navigation, route }) {
       });
   };
 
-  const onBidPress = () => {};
+  const onBidPress = () => {
+    Alert.prompt(
+      "Bid:",
+      "Enter your bid in ALGO",
+      (msg) => bid(ride._id, msg),
+      undefined,
+      undefined,
+      "numeric"
+    );
+  };
 
   return (
     <View style={styles.container}>

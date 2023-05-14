@@ -22,13 +22,17 @@ export default function DriverPage({ navigation, route }) {
       setRides(rides);
     });
 
-    socketClient.socket.onmessage = (message) => {
-      const data = JSON.parse(message.data);
-      if (data.type === MessageType.RideRequested) {
-        setRides((rides) => [data.data, ...rides]);
-      } else if (data.type === MessageType.RideCanceled) {
-        setRides((rides) => rides.filter((ride) => ride._id !== data.data._id));
-      }
+    socketClient.addEventHandler(MessageType.RideRequested, (data) => {
+      setRides((rides) => [data, ...rides]);
+    });
+
+    socketClient.addEventHandler(MessageType.RideCanceled, (data) => {
+      setRides((rides) => rides.filter((ride) => ride._id !== data._id));
+    });
+
+    return () => {
+      socketClient.removeEventHandler(MessageType.RideRequested);
+      socketClient.removeEventHandler(MessageType.RideCanceled);
     };
   }, []);
 
