@@ -1,23 +1,49 @@
 import { Config } from "../Config";
+import { Alert } from "react-native";
+import { convertAlgoToReadable } from "./Utils";
 
 export class SocketClient {
   static instance;
   socket;
   isReconnecting;
-  events = new Map();
+  user;
+  navigation;
+  events = new Map([
+    [
+      MessageType.RideArranged,
+      (data) => {
+        const ride = data.ride;
+        const bid = ride.bids.find(
+          (bid) => bid.username === this.user.username
+        );
+        Alert.alert(
+          "Bid Accepted",
+          `Your bid was accepted by ${
+            ride.passenger.username
+          } with amount ${convertAlgoToReadable(bid.amount)}`
+        );
 
-  constructor(username) {
+        this.navigation.navigate("RideArrangedPage", {
+          user: this.user,
+          rideId: data.ride._id,
+        });
+      },
+    ],
+  ]);
+
+  constructor(user, navigation) {
     if (SocketClient.instance) {
       return SocketClient.instance;
     }
-    this.username = username;
+    this.user = user;
+    this.navigation = navigation;
     this.isReconnecting = false;
     this.connect();
   }
 
-  static getInstance(username) {
+  static getInstance(user, navigation) {
     if (!SocketClient.instance) {
-      SocketClient.instance = new SocketClient(username);
+      SocketClient.instance = new SocketClient(user, navigation);
     }
     return SocketClient.instance;
   }
@@ -27,7 +53,10 @@ export class SocketClient {
     this.socket = new WebSocket(Config.SOCKET_URL);
 
     this.socket.onopen = () => {
-      const data = { type: "connection", data: { username: this.username } };
+      const data = {
+        type: "connection",
+        data: { username: this.user.username },
+      };
       this.socket.send(JSON.stringify(data));
       console.log("Socket connected!");
       this.isReconnecting = false;
@@ -41,19 +70,19 @@ export class SocketClient {
     };
 
     this.socket.onmessage = (e) => {
-      let data;
+      let message;
       try {
-        data = JSON.parse(e.data);
+        message = JSON.parse(e.data);
       } catch (error) {
         console.log("Unsupported message format", e);
         return;
       }
 
-      const event = this.events.get(data.type);
+      const event = this.events.get(message.type);
       if (event) {
-        event(data);
+        event(message.data);
       } else {
-        console.log("Unsupported message type", data.type);
+        console.log("Unsupported message type", message.type);
       }
     };
 
@@ -94,4 +123,6 @@ export const MessageType = {
   Bid: "bid",
   RideRequested: "ride_requested",
   RideCanceled: "ride_canceled",
+  RideDeployed: "ride_deployed",
+  RideArranged: "ride_arranged",
 };

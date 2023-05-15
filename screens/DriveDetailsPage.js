@@ -8,14 +8,13 @@ import MapScreen from "./Maps";
 export default function DriveDetailsPage({ navigation, route }) {
   const [user, setUser] = useState(route.params.user);
   const [socketClient, setSocketClient] = useState(
-    SocketClient.getInstance(user.username)
+    SocketClient.getInstance(user, navigation)
   );
   const [ride, setRide] = useState(route.params.ride);
 
   useEffect(() => {
     socketClient.addEventHandler(MessageType.RideCanceled, (data) => {
-      const realData = data.data;
-      if (ride && ride._id === realData._id) {
+      if (ride && ride._id === data._id) {
         navigation.navigate("MainMenu", { user });
       }
     });
@@ -36,21 +35,16 @@ export default function DriveDetailsPage({ navigation, route }) {
       return;
     }
 
-    backend
-      .bid(rideId, user.username, amount)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        Alert.prompt(
-          "Bid:",
-          "Enter your bid in ALGO",
-          (msg) => bid(ride._id, msg),
-          undefined,
-          undefined,
-          "numeric"
-        );
-      });
+    backend.bid(rideId, user.username, amount).catch((err) => {
+      Alert.prompt(
+        "Bid:",
+        "Enter your bid in ALGO",
+        (msg) => bid(ride._id, msg),
+        undefined,
+        undefined,
+        "numeric"
+      );
+    });
   };
 
   const onBidPress = () => {
@@ -70,7 +64,7 @@ export default function DriveDetailsPage({ navigation, route }) {
         Requesting ride: {ride.passenger.username}
       </Text>
       <Text style={styles.heading2}>Here are the bids on this ride:</Text>
-      <BidsComponent ride={ride} isPassenger={false} username={user.username} />
+      <BidsComponent ride={ride} isPassenger={false} user={user} />
       <View style={{ flex: 1, width: "80%", marginTop: 0 }}>
         <MapScreen
           isPassenger={false}

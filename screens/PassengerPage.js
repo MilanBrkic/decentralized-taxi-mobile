@@ -15,7 +15,7 @@ export default function PassengerPage({ navigation, route }) {
   );
   const [user, setUser] = useState(route.params.user);
   const [socketClient, setSocketClient] = useState(
-    SocketClient.getInstance(user.username)
+    SocketClient.getInstance(user, navigation)
   );
   const [marker, setMarker] = useState(null);
 
@@ -120,7 +120,8 @@ export default function PassengerPage({ navigation, route }) {
           <BidsComponent
             ride={ride}
             isPassenger={true}
-            username={user.username}
+            navigation={navigation}
+            user={user}
           />
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={onCancelRide}>

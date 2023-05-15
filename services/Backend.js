@@ -127,5 +127,22 @@ class Backend {
       throw error;
     }
   };
+
+  acceptRide = async (rideId, driverUsername, price) => {
+    try {
+      const response = await this.axios.post(
+        `${this.url}/ride/${rideId}/accept`,
+        {
+          driver_username: driverUsername,
+          price,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.warn("Error on accept ride", JSON.stringify(error));
+      alert(error.response?.data.message);
+      throw error;
+    }
+  };
 }
 export const backend = new Backend();

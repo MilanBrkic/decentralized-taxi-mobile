@@ -5,10 +5,9 @@ import MainMenu from "./screens/MainMenu";
 import PassengerPage from "./screens/PassengerPage";
 import DriverPage from "./screens/DriverPage";
 import DriveDetailsPage from "./screens/DriveDetailsPage";
-import { Config } from "./Config";
+import RideArrangedPage from "./screens/RideArrangedPage";
 
 const Stack = createStackNavigator();
-console.log(Config.SERVER_URL);
 export default function App() {
   return (
     <NavigationContainer>
@@ -41,6 +40,11 @@ export default function App() {
           name="DriveDetailsPage"
           component={DriveDetailsPage}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="RideArrangedPage"
+          component={RideArrangedPage}
+          options={{ headerShown: false, gestureEnabled: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

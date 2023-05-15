@@ -5,24 +5,50 @@ import {
   View,
   TouchableOpacity,
   Text,
+  Alert,
 } from "react-native";
 import { backend } from "../services/Backend";
 import { MessageType, SocketClient } from "../services/SocketClient";
+import { convertAlgoToReadable } from "../services/Utils";
 
-export const BidsComponent = ({ ride, username, isPassenger }) => {
+export const BidsComponent = ({ navigation, ride, user, isPassenger }) => {
   const [bids, setBids] = useState(ride ? ride.bids : []);
   const [socketClient, setSocketClient] = useState(
-    SocketClient.getInstance(username)
+    SocketClient.getInstance(user, navigation)
   );
+
+  onAcceptPress = (bid) => {
+    Alert.alert(
+      "Accept Bid",
+      `Are you sure you want to accept bid from ${
+        bid.username
+      } with amount ${convertAlgoToReadable(bid.amount)} ?`,
+      [
+        {
+          text: "Yes",
+          onPress: async () => {
+            await backend.acceptRide(ride._id, bid.username, bid.amount);
+            navigation.navigate("RideArrangedPage", {
+              user,
+              rideId: ride._id,
+            });
+          },
+        },
+        {
+          text: "No",
+        },
+      ]
+    );
+  };
+
   useEffect(() => {
     backend.getRide(ride._id).then((ride) => {
       setBids(ride.bids);
     });
 
     socketClient.addEventHandler(MessageType.Bid, (data) => {
-      const realData = data.data;
-      if (ride && ride._id === realData.rideId) {
-        setBids(realData.bids);
+      if (ride && ride._id === data.rideId) {
+        setBids(data.bids);
       }
     });
 
@@ -36,9 +62,14 @@ export const BidsComponent = ({ ride, username, isPassenger }) => {
       <TouchableOpacity style={styles.rowContainer}>
         <View style={styles.row}>
           <Text style={styles.column}>{item.username}</Text>
-          <Text style={styles.column}>{item.amount / 1000000} ALGO</Text>
+          <Text style={styles.column}>
+            {convertAlgoToReadable(item.amount)}
+          </Text>
           {isPassenger ? (
-            <TouchableOpacity style={styles.buttonColumn}>
+            <TouchableOpacity
+              style={styles.buttonColumn}
+              onPress={() => onAcceptPress(item)}
+            >
               <Text>Accept</Text>
             </TouchableOpacity>
           ) : null}

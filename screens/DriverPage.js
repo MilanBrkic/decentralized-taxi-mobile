@@ -13,7 +13,7 @@ import moment from "moment";
 export default function DriverPage({ navigation, route }) {
   const [user, setUser] = useState(route.params.user);
   const [socketClient, setSocketClient] = useState(
-    SocketClient.getInstance(user.username)
+    SocketClient.getInstance(user, navigation)
   );
   const [rides, setRides] = useState([]);
 
@@ -23,7 +23,7 @@ export default function DriverPage({ navigation, route }) {
     });
 
     socketClient.addEventHandler(MessageType.RideRequested, (data) => {
-      setRides((rides) => [data, ...rides]);
+      setRides((rides) => [data.ride, ...rides]);
     });
 
     socketClient.addEventHandler(MessageType.RideCanceled, (data) => {

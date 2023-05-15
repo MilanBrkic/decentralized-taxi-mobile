@@ -12,7 +12,7 @@ import { SocketClient } from "../services/SocketClient";
 export default function MainMenu({ navigation, route }) {
   const [user, setUser] = useState(route.params.user);
   const [socketClient, setSocketClient] = useState(
-    SocketClient.getInstance(user.username)
+    SocketClient.getInstance(user, navigation)
   );
   const [addingWallet, setAddingWallet] = useState(false);
   const [mnemonic, setMnemonic] = useState("");
@@ -56,7 +56,9 @@ export default function MainMenu({ navigation, route }) {
             user.address.substring(user.address.length - 5)
           : "No address yet"}
       </Text>
-      <Text>{user.address ? "The balance is " + user.balance : ""}</Text>
+      <Text>
+        {user.address ? "The balance is " + user.balance + " ALGO " : ""}
+      </Text>
       {user.address && (
         <>
           <Text style={styles.label}>Choose your role:</Text>
