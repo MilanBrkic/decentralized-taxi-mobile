@@ -62,13 +62,6 @@ export class SocketClient {
       this.isReconnecting = false;
     };
 
-    this.socket.onclose = (e) => {
-      console.log("Socket closed:", e.reason);
-      if (!this.isReconnecting) {
-        this.reconnect();
-      }
-    };
-
     this.socket.onmessage = (e) => {
       let message;
       try {
@@ -116,6 +109,11 @@ export class SocketClient {
       this.reconnect();
       alert("Socket not open, unable to send message");
     }
+  }
+
+  close() {
+    SocketClient.instance = null;
+    this.socket.close();
   }
 }
 

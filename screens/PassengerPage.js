@@ -19,6 +19,11 @@ export default function PassengerPage({ navigation, route }) {
   );
   const [marker, setMarker] = useState(null);
 
+  const handleLogout = () => {
+    socketClient.close();
+    navigation.navigate("Registration");
+  };
+
   onMarkerChange = (marker) => {
     setMarker(marker);
   };
@@ -113,6 +118,9 @@ export default function PassengerPage({ navigation, route }) {
       )}
       {!requestRideButton && (
         <>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutButtonText}>Logout</Text>
+          </TouchableOpacity>
           <Text style={styles.heading}>Hello passenger {user.username}</Text>
           <Text style={styles.heading2}>
             Here are the bids on your ride request:
@@ -146,6 +154,23 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     zIndex: 1,
+  },
+  logoutButton: {
+    marginTop: "10%",
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "#2196F3",
+    width: "15%",
+    height: "3%",
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoutButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
   heading2: {
     position: "absolute",

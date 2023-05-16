@@ -24,12 +24,13 @@ export default function App() {
           component={MainMenu}
           options={{
             headerShown: false,
+            gestureEnabled: false,
           }}
         />
         <Stack.Screen
           name="PassengerPage"
           component={PassengerPage}
-          options={{ headerShown: false }}
+          options={{ headerShown: false, gestureEnabled: false }}
         />
         <Stack.Screen
           name="DriverPage"

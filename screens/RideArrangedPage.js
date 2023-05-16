@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Text } from "react-native";
+import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import { MessageType, SocketClient } from "../services/SocketClient";
 import { backend } from "../services/Backend";
+import MapScreen from "./Maps";
 
 export default function RideArrangedPage({ navigation, route }) {
   const rideId = route.params.rideId;
@@ -10,6 +11,8 @@ export default function RideArrangedPage({ navigation, route }) {
   const [socketClient, setSocketClient] = useState(
     SocketClient.getInstance(user, navigation)
   );
+  const [rideDeploying, setRideDeploying] = useState(true);
+  const [text, setText] = useState("");
 
   useEffect(() => {
     backend.getRide(rideId).then((ride) => {
@@ -18,10 +21,11 @@ export default function RideArrangedPage({ navigation, route }) {
 
     socketClient.addEventHandler(MessageType.RideDeployed, (data) => {
       if (data.success === true) {
-        console.log("Ride deployed successfully");
+        setText("Ride deployed successfully");
       } else {
-        console.log("Ride deployment failed");
+        setText("Ride deployment failed");
       }
+      setRideDeploying(false);
     });
 
     return () => {
@@ -29,5 +33,44 @@ export default function RideArrangedPage({ navigation, route }) {
     };
   }, []);
 
-  return <Text>da</Text>;
+  return (
+    <View style={styles.container}>
+      {rideDeploying ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text style={styles.loaderText}>Ride is being deployed...</Text>
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <Text style={styles.rideDeployedText}>{text}</Text>
+          <MapScreen
+            isPassenger={false}
+            currentMarker={{
+              latitude: ride.fromCoordinates.latitude,
+              longitude: ride.fromCoordinates.longitude,
+              title: ride.fromCoordinates.title,
+            }}
+          />
+        </View>
+      )}
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loaderContainer: {
+    alignItems: "center",
+  },
+  loaderText: {
+    marginTop: 10,
+  },
+  rideDeployedText: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+});

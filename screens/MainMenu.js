@@ -21,9 +21,14 @@ export default function MainMenu({ navigation, route }) {
     setAddingWallet(true);
   };
 
+  const handleLogout = () => {
+    socketClient.close();
+    navigation.navigate("Registration");
+  };
+
   const handleRoleSelection = async (isPassenger) => {
     if (isPassenger) {
-      const requestedRide = user.ridesAsPassenger?.find(
+      const deployedRide = user.ridesAsPassenger?.find(
         (ride) => ride.status === "requested"
       );
 
@@ -47,6 +52,9 @@ export default function MainMenu({ navigation, route }) {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Logout</Text>
+      </TouchableOpacity>
       <Text style={styles.text}>Welcome {user.username}</Text>
       <Text>
         {user.address
@@ -112,6 +120,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: "100%",
+  },
+  logoutButton: {
+    marginTop: "10%",
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "#2196F3",
+    width: "15%",
+    height: "3%",
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoutButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
   text: {
     fontSize: 24,
