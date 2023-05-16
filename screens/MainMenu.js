@@ -28,10 +28,6 @@ export default function MainMenu({ navigation, route }) {
 
   const handleRoleSelection = async (isPassenger) => {
     if (isPassenger) {
-      const deployedRide = user.ridesAsPassenger?.find(
-        (ride) => ride.status === "requested"
-      );
-
       navigation.navigate("PassengerPage", {
         user,
       });

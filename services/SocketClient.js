@@ -123,4 +123,5 @@ export const MessageType = {
   RideCanceled: "ride_canceled",
   RideDeployed: "ride_deployed",
   RideArranged: "ride_arranged",
+  RideTimeout: "ride_timeout",
 };
