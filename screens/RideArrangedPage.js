@@ -34,8 +34,8 @@ export default function RideArrangedPage({ navigation, route }) {
       setRideDeploying(false);
     });
 
-    socketClient.addEventHandler(MessageType.RideCanceled, (data) => {
-      if (ride && ride._id === data.ride._id) {
+    socketClient.addEventHandler(MessageType.RideTimeout, (data) => {
+      if (rideId === data.ride._id) {
         Alert.alert("Ride timeout", "The ride has time outed.");
         navigation.navigate("MainMenu", { user });
       }
@@ -43,7 +43,7 @@ export default function RideArrangedPage({ navigation, route }) {
 
     return () => {
       socketClient.removeEventHandler(MessageType.RideDeployed);
-      socketClient.removeEventHandler(MessageType.RideCanceled);
+      socketClient.removeEventHandler(MessageType.RideTimeout);
     };
   }, []);
 
@@ -52,7 +52,9 @@ export default function RideArrangedPage({ navigation, route }) {
       {rideDeploying ? (
         <View style={styles.loaderContainer}>
           <ActivityIndicator size="large" color="#0000ff" />
-          <Text style={styles.loaderText}>Ride is being deployed...</Text>
+          <Text style={styles.loaderText}>
+            Ride is being deployed on the chain...
+          </Text>
         </View>
       ) : (
         <View style={styles.container}>

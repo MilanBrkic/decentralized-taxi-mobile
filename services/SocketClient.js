@@ -75,7 +75,9 @@ export class SocketClient {
       if (event) {
         event(message.data);
       } else {
-        console.log("Unsupported message type", message.type);
+        console.log(
+          `Unsupported message type ${message.type} for user ${this.user.username}`
+        );
       }
     };
 
