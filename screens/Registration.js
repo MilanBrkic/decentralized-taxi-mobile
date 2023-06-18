@@ -80,6 +80,7 @@ export default function Registration({ navigation }) {
             user,
             rideId: deployedRide._id,
             deployed: true,
+            isPassenger: deployedRide.passenger.username === user.username,
           });
           return;
         }

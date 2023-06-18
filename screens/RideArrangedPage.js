@@ -8,6 +8,7 @@ export default function RideArrangedPage({ navigation, route }) {
   const rideId = route.params.rideId;
   const user = route.params.user;
   const deployed = route.params.deployed;
+  const isPassenger = route.params.isPassenger;
   const [ride, setRide] = useState(null);
   const [socketClient, setSocketClient] = useState(
     SocketClient.getInstance(user, navigation)
@@ -16,6 +17,7 @@ export default function RideArrangedPage({ navigation, route }) {
   const [text, setText] = useState(
     deployed ? "Ride deployed successfully" : ""
   );
+  const [currentMarker, setCurrentMarker] = useState({});
 
   const deployingText =
     "Ride is being deployed, this should take around 30 seconds...";
@@ -23,6 +25,14 @@ export default function RideArrangedPage({ navigation, route }) {
   useEffect(() => {
     backend.getRide(rideId).then((ride) => {
       setRide(ride);
+      if (!isPassenger) {
+        setCurrentMarker({
+          latitude: ride.fromCoordinates.latitude,
+          longitude: ride.fromCoordinates.longitude,
+          title: ride.fromCoordinates.title,
+        });
+        console.log(currentMarker);
+      }
     });
 
     socketClient.addEventHandler(MessageType.RideDeployed, (data) => {
@@ -36,7 +46,7 @@ export default function RideArrangedPage({ navigation, route }) {
 
     socketClient.addEventHandler(MessageType.RideTimeout, (data) => {
       if (rideId === data.ride._id) {
-        Alert.alert("Ride timeout", "The ride has time outed.");
+        Alert.alert("Ride timeout", "The ride has timed out.");
         navigation.navigate("MainMenu", { user });
       }
     });
@@ -52,22 +62,22 @@ export default function RideArrangedPage({ navigation, route }) {
       {rideDeploying ? (
         <View style={styles.loaderContainer}>
           <ActivityIndicator size="large" color="#0000ff" />
-          <Text style={styles.loaderText}>
-            Ride is being deployed on the chain...
-          </Text>
+          <Text style={styles.loaderText}>{deployingText}</Text>
         </View>
       ) : (
-        <View style={styles.container}>
+        <View style={styles.contentContainer}>
           <Text style={styles.rideDeployedText}>{text}</Text>
+          <Text style={styles.currentUserStatus}>
+            Current user status: {isPassenger ? "Passenger" : "Driver"}
+          </Text>
           {ride && (
-            <MapScreen
-              isPassenger={false}
-              currentMarker={{
-                latitude: ride.fromCoordinates.latitude,
-                longitude: ride.fromCoordinates.longitude,
-                title: ride.fromCoordinates.title,
-              }}
-            />
+            <View style={[styles.mapContainer]}>
+              <MapScreen
+                style={styles.mapScreen}
+                isPassenger={false}
+                currentMarker={currentMarker}
+              />
+            </View>
           )}
         </View>
       )}
@@ -90,5 +100,13 @@ const styles = StyleSheet.create({
   rideDeployedText: {
     fontSize: 20,
     fontWeight: "bold",
+  },
+  currentUserStatus: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: "10%",
+  },
+  mapContainer: {
+    height: "70%",
   },
 });

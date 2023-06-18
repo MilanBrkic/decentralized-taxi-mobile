@@ -40,14 +40,20 @@ const MapScreen = ({
   };
 
   const fitToCoordinates = (ref) => {
-    if (ref.current && !isPassenger && currentMarker && destinationMarker) {
-      ref.current.fitToCoordinates(
-        [userCoordinates, currentMarker, destinationMarker],
-        {
-          edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
-          animated: true,
-        }
-      );
+    if (ref.current && !isPassenger && (currentMarker || destinationMarker)) {
+      const coords = [userCoordinates];
+
+      if (currentMarker) {
+        coords.push(currentMarker);
+      }
+
+      if (destinationMarker) {
+        coords.push(destinationMarker);
+      }
+      ref.current.fitToCoordinates(coords, {
+        edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+        animated: true,
+      });
     }
   };
 
