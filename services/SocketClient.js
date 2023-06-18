@@ -32,7 +32,9 @@ export class SocketClient {
   static initEvents(instance) {
     instance.events.set(MessageType.RideArranged, (data) => {
       const ride = data.ride;
-      const bid = ride.bids.find((bid) => bid.username === this.user.username);
+      const bid = ride.bids.find(
+        (bid) => bid.username === instance.user.username
+      );
       Alert.alert(
         "Bid Accepted",
         `Your bid was accepted by ${
@@ -40,7 +42,7 @@ export class SocketClient {
         } with amount ${convertAlgoToReadable(bid.amount)}`
       );
 
-      this.navigation.navigate("RideArrangedPage", {
+      instance.navigation.navigate("RideArrangedPage", {
         user: this.user,
         rideId: data.ride._id,
       });

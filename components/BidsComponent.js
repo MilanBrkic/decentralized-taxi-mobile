@@ -18,6 +18,8 @@ export const BidsComponent = ({ navigation, ride, user, isPassenger }) => {
   );
 
   onAcceptPress = (bid) => {
+    const isPassenger = ride.passenger.username === user.username;
+
     Alert.alert(
       "Accept Bid",
       `Are you sure you want to accept bid from ${
@@ -31,6 +33,8 @@ export const BidsComponent = ({ navigation, ride, user, isPassenger }) => {
             navigation.navigate("RideArrangedPage", {
               user,
               rideId: ride._id,
+              deployed: false,
+              isPassenger,
             });
           },
         },
