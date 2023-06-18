@@ -40,7 +40,7 @@ const MapScreen = ({
   };
 
   const fitToCoordinates = (ref) => {
-    if (ref.current && !isPassenger && (currentMarker || destinationMarker)) {
+    if (ref.current && (currentMarker || destinationMarker)) {
       const coords = [userCoordinates];
 
       if (currentMarker) {
@@ -129,7 +129,7 @@ const MapScreen = ({
             <Marker
               coordinate={currentMarker}
               title={currentMarker.title}
-              description={"Passenger location"}
+              description={currentMarker.description}
               pinColor="red"
             />
           )}

@@ -72,6 +72,7 @@ export default function DriveDetailsPage({ navigation, route }) {
             latitude: ride.fromCoordinates.latitude,
             longitude: ride.fromCoordinates.longitude,
             title: ride.fromCoordinates.title,
+            description: "Passenger location",
           }}
           destinationMarker={{
             latitude: ride.toCoordinates.latitude,

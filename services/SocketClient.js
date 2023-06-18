@@ -1,6 +1,7 @@
 import { Config } from "../Config";
 import { Alert } from "react-native";
 import { convertAlgoToReadable } from "./Utils";
+import { locationService } from "./LocationService";
 
 export class SocketClient {
   static instance;
@@ -8,28 +9,7 @@ export class SocketClient {
   isReconnecting;
   user;
   navigation;
-  events = new Map([
-    [
-      MessageType.RideArranged,
-      (data) => {
-        const ride = data.ride;
-        const bid = ride.bids.find(
-          (bid) => bid.username === this.user.username
-        );
-        Alert.alert(
-          "Bid Accepted",
-          `Your bid was accepted by ${
-            ride.passenger.username
-          } with amount ${convertAlgoToReadable(bid.amount)}`
-        );
-
-        this.navigation.navigate("RideArrangedPage", {
-          user: this.user,
-          rideId: data.ride._id,
-        });
-      },
-    ],
-  ]);
+  events = new Map();
 
   constructor(user, navigation) {
     if (SocketClient.instance) {
@@ -44,8 +24,27 @@ export class SocketClient {
   static getInstance(user, navigation) {
     if (!SocketClient.instance) {
       SocketClient.instance = new SocketClient(user, navigation);
+      this.initEvents(SocketClient.instance);
     }
     return SocketClient.instance;
+  }
+
+  static initEvents(instance) {
+    instance.events.set(MessageType.RideArranged, (data) => {
+      const ride = data.ride;
+      const bid = ride.bids.find((bid) => bid.username === this.user.username);
+      Alert.alert(
+        "Bid Accepted",
+        `Your bid was accepted by ${
+          ride.passenger.username
+        } with amount ${convertAlgoToReadable(bid.amount)}`
+      );
+
+      this.navigation.navigate("RideArrangedPage", {
+        user: this.user,
+        rideId: data.ride._id,
+      });
+    });
   }
 
   connect() {
@@ -126,4 +125,7 @@ export const MessageType = {
   RideDeployed: "ride_deployed",
   RideArranged: "ride_arranged",
   RideTimeout: "ride_timeout",
+  GetLocation: "get_location",
+  ReturnDriverLocation: "return_driver_location",
+  SubscribeToDriverLocation: "subscribe_to_driver_location",
 };

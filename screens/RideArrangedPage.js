@@ -3,6 +3,7 @@ import { View, Text, ActivityIndicator, StyleSheet, Alert } from "react-native";
 import { MessageType, SocketClient } from "../services/SocketClient";
 import { backend } from "../services/Backend";
 import MapScreen from "./Maps";
+import { locationService } from "../services/LocationService";
 
 export default function RideArrangedPage({ navigation, route }) {
   const rideId = route.params.rideId;
@@ -17,7 +18,7 @@ export default function RideArrangedPage({ navigation, route }) {
   const [text, setText] = useState(
     deployed ? "Ride deployed successfully" : ""
   );
-  const [currentMarker, setCurrentMarker] = useState({});
+  const [currentMarker, setCurrentMarker] = useState(null);
 
   const deployingText =
     "Ride is being deployed, this should take around 30 seconds...";
@@ -30,8 +31,13 @@ export default function RideArrangedPage({ navigation, route }) {
           latitude: ride.fromCoordinates.latitude,
           longitude: ride.fromCoordinates.longitude,
           title: ride.fromCoordinates.title,
+          description: "Passenger location",
         });
-        console.log(currentMarker);
+      } else {
+        socketClient.send({
+          type: MessageType.SubscribeToDriverLocation,
+          data: { ride },
+        });
       }
     });
 
@@ -51,9 +57,37 @@ export default function RideArrangedPage({ navigation, route }) {
       }
     });
 
+    socketClient.addEventHandler(
+      MessageType.ReturnDriverLocation,
+      async (data) => {
+        console.log(
+          `Received socket event: ${MessageType.ReturnDriverLocation}`
+        );
+        if (isPassenger) {
+          const location = data.location;
+
+          setCurrentMarker({
+            latitude: location.latitude,
+            longitude: location.longitude,
+            title: location.title,
+            description: "Driver location",
+          });
+        } else {
+          const location = await locationService.getUsersCurrentPosition();
+          const ride = data.ride;
+
+          socketClient.send({
+            type: MessageType.ReturnDriverLocation,
+            data: { location, ride },
+          });
+        }
+      }
+    );
+
     return () => {
       socketClient.removeEventHandler(MessageType.RideDeployed);
       socketClient.removeEventHandler(MessageType.RideTimeout);
+      socketClient.removeEventHandler(MessageType.GetLocation);
     };
   }, []);
 
