@@ -74,12 +74,14 @@ export default function Registration({ navigation }) {
       try {
         const user = await backend.login(username, password);
         const rides = [...user.ridesAsDriver, ...user.ridesAsPassenger];
-        const deployedRide = rides.find((ride) => ride.status === "deployed");
+        const deployedRide = rides.find(
+          (ride) => ride.status === "deployed" || ride.status === "created"
+        );
         if (deployedRide) {
           navigation.navigate("RideArrangedPage", {
             user,
             rideId: deployedRide._id,
-            deployed: true,
+            deployed: deployedRide.status === "deployed",
             isPassenger: deployedRide.passenger.username === user.username,
           });
           return;

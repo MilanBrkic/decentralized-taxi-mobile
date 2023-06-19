@@ -13,11 +13,11 @@ class Backend {
       });
       return response.data;
     } catch (error) {
+      alert(error.response?.data.message);
       console.warn(
         "Error when registering user",
         JSON.stringify(error.response.data)
       );
-      throw error;
     }
   };
 
@@ -29,8 +29,8 @@ class Backend {
       });
       return response.data;
     } catch (error) {
+      alert(error.response?.data.message);
       console.warn("Error on user login", JSON.stringify(error.response.data));
-      throw error;
     }
   };
 
@@ -42,8 +42,8 @@ class Backend {
       });
       return response.data;
     } catch (error) {
+      alert(error.response?.data.message);
       console.warn("Error on wallet creation", JSON.stringify(error));
-      throw error;
     }
   };
 
@@ -58,8 +58,6 @@ class Backend {
     } catch (error) {
       alert(error.response?.data.message);
       console.warn("Error on ride request", JSON.stringify(error));
-
-      throw error;
     }
   };
 
@@ -72,7 +70,6 @@ class Backend {
     } catch (error) {
       console.warn("Error on ride request", JSON.stringify(error));
       alert(error.response?.data.message);
-      throw error;
     }
   };
 
@@ -83,7 +80,6 @@ class Backend {
     } catch (error) {
       console.warn("Error on ride request", JSON.stringify(error));
       alert(error.response?.data.message);
-      throw error;
     }
   };
 
@@ -97,7 +93,6 @@ class Backend {
     } catch (error) {
       console.warn("Error on bid", JSON.stringify(error));
       alert(error.response?.data.message);
-      throw error;
     }
   };
 
@@ -108,7 +103,6 @@ class Backend {
     } catch (error) {
       console.warn("Error on get user", JSON.stringify(error));
       alert(error.response?.data.message);
-      throw error;
     }
   };
 
@@ -124,7 +118,6 @@ class Backend {
     } catch (error) {
       console.warn("Error on cancel ride", JSON.stringify(error));
       alert(error.response?.data.message);
-      throw error;
     }
   };
 
@@ -141,7 +134,6 @@ class Backend {
     } catch (error) {
       console.warn("Error on accept ride", JSON.stringify(error));
       alert(error.response?.data.message);
-      throw error;
     }
   };
 }

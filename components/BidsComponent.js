@@ -18,8 +18,6 @@ export const BidsComponent = ({ navigation, ride, user, isPassenger }) => {
   );
 
   onAcceptPress = (bid) => {
-    const isPassenger = ride.passenger.username === user.username;
-
     Alert.alert(
       "Accept Bid",
       `Are you sure you want to accept bid from ${
@@ -60,6 +58,10 @@ export const BidsComponent = ({ navigation, ride, user, isPassenger }) => {
       socketClient.removeEventHandler(MessageType.Bid);
     };
   }, []);
+
+  useEffect(() => {
+    setBids(ride ? ride.bids : []);
+  }, [ride]);
 
   const renderItem = ({ item }) => {
     return (

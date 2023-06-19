@@ -24,7 +24,7 @@ export default function DriveDetailsPage({ navigation, route }) {
     };
   }, []);
 
-  const bid = (rideId, amount) => {
+  const bid = async (rideId, amount) => {
     if (amount.length === 0) {
       alert("can't be empty");
       return;
@@ -35,7 +35,10 @@ export default function DriveDetailsPage({ navigation, route }) {
       return;
     }
 
-    backend.bid(rideId, user.username, amount).catch((err) => {
+    try {
+      const ride = await backend.bid(rideId, user.username, amount);
+      setRide(ride);
+    } catch (error) {
       Alert.prompt(
         "Bid:",
         "Enter your bid in ALGO",
@@ -44,7 +47,7 @@ export default function DriveDetailsPage({ navigation, route }) {
         undefined,
         "numeric"
       );
-    });
+    }
   };
 
   const onBidPress = () => {

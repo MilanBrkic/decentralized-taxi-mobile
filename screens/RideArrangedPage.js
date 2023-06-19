@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import { MessageType, SocketClient } from "../services/SocketClient";
 import { backend } from "../services/Backend";
 import MapScreen from "./Maps";
@@ -15,9 +22,7 @@ export default function RideArrangedPage({ navigation, route }) {
     SocketClient.getInstance(user, navigation)
   );
   const [rideDeploying, setRideDeploying] = useState(deployed ? false : true);
-  const [text, setText] = useState(
-    deployed ? "Ride deployed successfully" : ""
-  );
+  const [text, setText] = useState(deployed ? "Ride deployed" : "");
   const [currentMarker, setCurrentMarker] = useState(null);
 
   const deployingText =
@@ -102,7 +107,9 @@ export default function RideArrangedPage({ navigation, route }) {
         <View style={styles.contentContainer}>
           <Text style={styles.rideDeployedText}>{text}</Text>
           <Text style={styles.currentUserStatus}>
-            Current user status: {isPassenger ? "Passenger" : "Driver"}
+            {isPassenger
+              ? "Driver is on his way to pick you up"
+              : "Please pick up the passenger at his location"}
           </Text>
           {ride && (
             <View style={[styles.mapContainer]}>
@@ -113,6 +120,12 @@ export default function RideArrangedPage({ navigation, route }) {
               />
             </View>
           )}
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Start Ride</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </View>
@@ -140,7 +153,32 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: "10%",
   },
+  contentContainer: {
+    marginTop: "15%",
+  },
   mapContainer: {
-    height: "70%",
+    height: "60%",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 5,
+  },
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 15,
+  },
+  button: {
+    backgroundColor: "#2196F3",
+    width: "30%",
+    margin: "2%",
+    height: "30%",
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
