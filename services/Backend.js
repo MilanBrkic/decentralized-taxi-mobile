@@ -136,5 +136,20 @@ class Backend {
       alert(error.response?.data.message);
     }
   };
+
+  startRide = async (rideId, username) => {
+    try {
+      const response = await this.axios.post(
+        `${this.url}/ride/${rideId}/start`,
+        {
+          username,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.warn("Error on start ride", JSON.stringify(error));
+      alert(error.response?.data.message);
+    }
+  };
 }
 export const backend = new Backend();

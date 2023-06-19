@@ -43,8 +43,10 @@ export class SocketClient {
       );
 
       instance.navigation.navigate("RideArrangedPage", {
-        user: this.user,
+        user: instance.user,
         rideId: data.ride._id,
+        deployed: false,
+        isPassenger: false,
       });
     });
   }
@@ -130,4 +132,5 @@ export const MessageType = {
   GetLocation: "get_location",
   ReturnDriverLocation: "return_driver_location",
   SubscribeToDriverLocation: "subscribe_to_driver_location",
+  UnsubscribeToDriverLocation: "unsubscribe_to_driver_location",
 };

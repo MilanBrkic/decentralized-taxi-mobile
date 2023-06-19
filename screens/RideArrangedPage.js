@@ -62,39 +62,62 @@ export default function RideArrangedPage({ navigation, route }) {
       }
     });
 
-    socketClient.addEventHandler(
-      MessageType.ReturnDriverLocation,
-      async (data) => {
-        console.log(
-          `Received socket event: ${MessageType.ReturnDriverLocation}`
-        );
-        if (isPassenger) {
-          const location = data.location;
+    if (!socketClient.events.get(MessageType.ReturnDriverLocation)) {
+      socketClient.addEventHandler(
+        MessageType.ReturnDriverLocation,
+        async (data) => {
+          console.log(
+            `Received socket event: ${MessageType.ReturnDriverLocation}`
+          );
+          if (isPassenger) {
+            const location = data.location;
 
-          setCurrentMarker({
-            latitude: location.latitude,
-            longitude: location.longitude,
-            title: location.title,
-            description: "Driver location",
-          });
-        } else {
-          const location = await locationService.getUsersCurrentPosition();
-          const ride = data.ride;
+            setCurrentMarker({
+              latitude: location.latitude,
+              longitude: location.longitude,
+              title: location.title,
+              description: "Driver location",
+            });
+          } else {
+            const location = await locationService.getUsersCurrentPosition();
+            const ride = data.ride;
 
-          socketClient.send({
-            type: MessageType.ReturnDriverLocation,
-            data: { location, ride },
-          });
+            socketClient.send({
+              type: MessageType.ReturnDriverLocation,
+              data: { location, ride },
+            });
+          }
         }
-      }
-    );
+      );
+    }
 
     return () => {
       socketClient.removeEventHandler(MessageType.RideDeployed);
       socketClient.removeEventHandler(MessageType.RideTimeout);
-      socketClient.removeEventHandler(MessageType.GetLocation);
+      socketClient.removeEventHandler(MessageType.ReturnDriverLocation);
+      socketClient.send({
+        type: MessageType.UnsubscribeToDriverLocation,
+      });
     };
   }, []);
+
+  onStartRide = async () => {
+    Alert.alert(
+      "Start ride",
+      `Are you sure you want to start the ride? ${
+        !isPassenger ? "Did you pick up the passenger?" : ""
+      }`,
+      [
+        {
+          text: "Yes",
+          onPress: async () => {
+            await backend.startRide(rideId, user.username);
+          },
+        },
+        { text: "No" },
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -122,7 +145,7 @@ export default function RideArrangedPage({ navigation, route }) {
           )}
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={onStartRide}>
               <Text style={styles.buttonText}>Start Ride</Text>
             </TouchableOpacity>
           </View>
@@ -145,13 +168,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   rideDeployedText: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: "bold",
+    textAlign: "center",
   },
   currentUserStatus: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: "10%",
+    textAlign: "center",
   },
   contentContainer: {
     marginTop: "15%",
