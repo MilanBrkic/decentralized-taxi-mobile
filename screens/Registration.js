@@ -74,6 +74,16 @@ export default function Registration({ navigation }) {
       try {
         const user = await backend.login(username, password);
         const rides = [...user.ridesAsDriver, ...user.ridesAsPassenger];
+        const startedRide = rides.find((ride) => ride.status === "started");
+        if (startedRide) {
+          navigation.navigate("RideStartedPage", {
+            user,
+            rideId: startedRide._id,
+            isPassenger: startedRide.passenger.username === user.username,
+          });
+          return;
+        }
+
         const deployedRide = rides.find(
           (ride) => ride.status === "deployed" || ride.status === "created"
         );

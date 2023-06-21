@@ -24,6 +24,11 @@ export default function RideArrangedPage({ navigation, route }) {
   const [rideDeploying, setRideDeploying] = useState(deployed ? false : true);
   const [text, setText] = useState(deployed ? "Ride deployed" : "");
   const [currentMarker, setCurrentMarker] = useState(null);
+  const [currentUserStatusText, setCurrentUserStatusText] = useState(
+    isPassenger
+      ? "Driver is on his way to pick you up"
+      : "Please pick up the passenger at his location"
+  );
 
   const deployingText =
     "Ride is being deployed, this should take around 30 seconds...";
@@ -62,6 +67,17 @@ export default function RideArrangedPage({ navigation, route }) {
       }
     });
 
+    socketClient.addEventHandler(MessageType.RideStarted, (data) => {
+      if (rideId === data.ride._id) {
+        Alert.alert(
+          "Ride started",
+          "Both users have confirmed. Have a nice ride!"
+        );
+
+        navigation.navigate("RideStartedPage", { user, rideId, isPassenger });
+      }
+    });
+
     if (!socketClient.events.get(MessageType.ReturnDriverLocation)) {
       socketClient.addEventHandler(
         MessageType.ReturnDriverLocation,
@@ -95,8 +111,10 @@ export default function RideArrangedPage({ navigation, route }) {
       socketClient.removeEventHandler(MessageType.RideDeployed);
       socketClient.removeEventHandler(MessageType.RideTimeout);
       socketClient.removeEventHandler(MessageType.ReturnDriverLocation);
+      socketClient.removeEventHandler(MessageType.RideStarted);
       socketClient.send({
         type: MessageType.UnsubscribeToDriverLocation,
+        data: { ride },
       });
     };
   }, []);
@@ -105,13 +123,20 @@ export default function RideArrangedPage({ navigation, route }) {
     Alert.alert(
       "Start ride",
       `Are you sure you want to start the ride? ${
-        !isPassenger ? "Did you pick up the passenger?" : ""
+        !isPassenger
+          ? "Did you pick up the passenger?"
+          : "Were you picked up by the driver?"
       }`,
       [
         {
           text: "Yes",
           onPress: async () => {
             await backend.startRide(rideId, user.username);
+            setCurrentUserStatusText(
+              `Waiting for the ${
+                isPassenger ? "driver" : "passenger"
+              } to confirm the ride...`
+            );
           },
         },
         { text: "No" },
@@ -129,11 +154,7 @@ export default function RideArrangedPage({ navigation, route }) {
       ) : (
         <View style={styles.contentContainer}>
           <Text style={styles.rideDeployedText}>{text}</Text>
-          <Text style={styles.currentUserStatus}>
-            {isPassenger
-              ? "Driver is on his way to pick you up"
-              : "Please pick up the passenger at his location"}
-          </Text>
+          <Text style={styles.currentUserStatus}>{currentUserStatusText}</Text>
           {ride && (
             <View style={[styles.mapContainer]}>
               <MapScreen

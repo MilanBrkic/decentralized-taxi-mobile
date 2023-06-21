@@ -6,6 +6,7 @@ import PassengerPage from "./screens/PassengerPage";
 import DriverPage from "./screens/DriverPage";
 import DriveDetailsPage from "./screens/DriveDetailsPage";
 import RideArrangedPage from "./screens/RideArrangedPage";
+import RideStartedPage from "./screens/RideStartedPage";
 
 const Stack = createStackNavigator();
 export default function App() {
@@ -45,6 +46,11 @@ export default function App() {
         <Stack.Screen
           name="RideArrangedPage"
           component={RideArrangedPage}
+          options={{ headerShown: false, gestureEnabled: false }}
+        />
+        <Stack.Screen
+          name="RideStartedPage"
+          component={RideStartedPage}
           options={{ headerShown: false, gestureEnabled: false }}
         />
       </Stack.Navigator>

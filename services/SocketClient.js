@@ -129,6 +129,7 @@ export const MessageType = {
   RideDeployed: "ride_deployed",
   RideArranged: "ride_arranged",
   RideTimeout: "ride_timeout",
+  RideStarted: "ride_started",
   GetLocation: "get_location",
   ReturnDriverLocation: "return_driver_location",
   SubscribeToDriverLocation: "subscribe_to_driver_location",
