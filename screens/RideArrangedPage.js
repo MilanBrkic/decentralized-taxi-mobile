@@ -74,6 +74,10 @@ export default function RideArrangedPage({ navigation, route }) {
           "Both users have confirmed. Have a nice ride!"
         );
 
+        socketClient.send({
+          type: MessageType.UnsubscribeToDriverLocation,
+          data: { ride },
+        });
         navigation.navigate("RideStartedPage", { user, rideId, isPassenger });
       }
     });
@@ -131,12 +135,12 @@ export default function RideArrangedPage({ navigation, route }) {
         {
           text: "Yes",
           onPress: async () => {
-            await backend.startRide(rideId, user.username);
             setCurrentUserStatusText(
               `Waiting for the ${
                 isPassenger ? "driver" : "passenger"
               } to confirm the ride...`
             );
+            await backend.startRide(rideId, user.username);
           },
         },
         { text: "No" },
