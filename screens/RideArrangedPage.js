@@ -75,7 +75,7 @@ export default function RideArrangedPage({ navigation, route }) {
         );
 
         socketClient.send({
-          type: MessageType.UnsubscribeToDriverLocation,
+          type: MessageType.ClearSubscriptions,
           data: { ride },
         });
         navigation.navigate("RideStartedPage", { user, rideId, isPassenger });
@@ -117,7 +117,7 @@ export default function RideArrangedPage({ navigation, route }) {
       socketClient.removeEventHandler(MessageType.ReturnDriverLocation);
       socketClient.removeEventHandler(MessageType.RideStarted);
       socketClient.send({
-        type: MessageType.UnsubscribeToDriverLocation,
+        type: MessageType.ClearSubscriptions,
         data: { ride },
       });
     };

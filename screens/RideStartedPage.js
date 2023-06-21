@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { SocketClient } from "../services/SocketClient";
+import { MessageType, SocketClient } from "../services/SocketClient";
 import { backend } from "../services/Backend";
+import { locationService } from "../services/LocationService";
 
 export default function RideStartedPage({ navigation, route }) {
   const rideId = route.params.rideId;
@@ -15,7 +16,33 @@ export default function RideStartedPage({ navigation, route }) {
   useEffect(() => {
     backend.getRide(rideId).then((ride) => {
       setRide(ride);
+
+      socketClient.send({
+        type: MessageType.SubscribeToLocationSharing,
+        data: { ride },
+      });
     });
+
+    socketClient.addEventHandler(
+      MessageType.SubscribeToLocationSharing,
+      async (data) => {
+        const location = await locationService.getUsersCurrentPosition();
+        const ride = data.ride;
+
+        socketClient.send({
+          type: MessageType.ShareLocation,
+          data: { location, username: user.username, ride },
+        });
+      }
+    );
+
+    return () => {
+      socketClient.removeEventHandler(MessageType.SubscribeToLocationSharing);
+      socketClient.send({
+        type: MessageType.ClearSubscriptions,
+        data: { ride },
+      });
+    };
   }, []);
 
   return <View style={styles.container}></View>;
