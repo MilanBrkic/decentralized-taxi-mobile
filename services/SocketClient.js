@@ -93,10 +93,16 @@ export class SocketClient {
   }
 
   addEventHandler = (type, eventHandlers) => {
+    console.log(
+      `Adding event handler for ${type} for user ${this.user.username}`
+    );
     this.events.set(type, eventHandlers);
   };
 
   removeEventHandler = (type) => {
+    console.log(
+      `Removing event handler for ${type} for user ${this.user.username}`
+    );
     this.events.delete(type);
   };
 
