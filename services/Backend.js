@@ -151,5 +151,17 @@ class Backend {
       alert(error.response?.data.message);
     }
   };
+
+  endRide = async (rideId, username) => {
+    try {
+      const response = await this.axios.post(`${this.url}/ride/${rideId}/end`, {
+        username,
+      });
+      return response.data;
+    } catch (error) {
+      console.warn("Error on end ride", JSON.stringify(error));
+      alert(error.response?.data.message);
+    }
+  };
 }
 export const backend = new Backend();

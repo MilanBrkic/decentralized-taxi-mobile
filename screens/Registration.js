@@ -76,12 +76,22 @@ export default function Registration({ navigation }) {
         const rides = [...user.ridesAsDriver, ...user.ridesAsPassenger];
         const startedRide = rides.find((ride) => ride.status === "started");
         if (startedRide) {
-          navigation.navigate("RideStartedPage", {
-            user,
-            rideId: startedRide._id,
-            isPassenger: startedRide.passenger.username === user.username,
-          });
-          return;
+          const isPassenger = startedRide.passenger.username === user.username;
+
+          const hasUserEndedTheRide = isPassenger
+            ? startedRide.passengerStats.ended
+            : startedRide.driverStats.ended;
+
+          if (!hasUserEndedTheRide) {
+            navigation.navigate("RideStartedPage", {
+              user,
+              rideId: startedRide._id,
+              isPassenger,
+            });
+            return;
+          }
+
+          navigation.navigate("MainMenu", { user });
         }
 
         const deployedRide = rides.find(
