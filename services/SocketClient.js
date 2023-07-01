@@ -86,6 +86,7 @@ export class SocketClient {
 
     this.socket.onerror = (e) => {
       console.log("Socket error:", e.message);
+      console.log("Socket error:" + JSON.stringify(e, null, 2));
       if (!this.isReconnecting) {
         this.reconnect();
       }
