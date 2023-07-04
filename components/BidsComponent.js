@@ -22,7 +22,7 @@ export const BidsComponent = ({ navigation, ride, user, isPassenger }) => {
       "Accept Bid",
       `Are you sure you want to accept bid from ${
         bid.username
-      } with amount ${convertAlgoToReadable(bid.amount)} ?`,
+      } with amount ${convertAlgoToReadable(bid.amount)} ALGO ?`,
       [
         {
           text: "Yes",
@@ -69,7 +69,7 @@ export const BidsComponent = ({ navigation, ride, user, isPassenger }) => {
         <View style={styles.row}>
           <Text style={styles.column}>{item.username}</Text>
           <Text style={styles.column}>
-            {convertAlgoToReadable(item.amount)}
+            {convertAlgoToReadable(item.amount) + " ALGO"}
           </Text>
           {isPassenger ? (
             <TouchableOpacity

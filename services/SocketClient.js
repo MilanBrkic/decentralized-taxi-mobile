@@ -1,7 +1,6 @@
 import { Config } from "../Config";
 import { Alert } from "react-native";
 import { convertAlgoToReadable } from "./Utils";
-import { locationService } from "./LocationService";
 
 export class SocketClient {
   static instance;
@@ -39,7 +38,7 @@ export class SocketClient {
         "Bid Accepted",
         `Your bid was accepted by ${
           ride.passenger.username
-        } with amount ${convertAlgoToReadable(bid.amount)}`
+        } with amount ${convertAlgoToReadable(bid.amount)} ALGO`
       );
 
       instance.navigation.navigate("RideArrangedPage", {
@@ -137,6 +136,7 @@ export const MessageType = {
   RideArranged: "ride_arranged",
   RideTimeout: "ride_timeout",
   RideStarted: "ride_started",
+  RideEnded: "ride_ended",
   ReturnDriverLocation: "return_driver_location",
   SubscribeToDriverLocation: "subscribe_to_driver_location",
   UnsubscribeToDriverLocation: "unsubscribe_to_driver_location",

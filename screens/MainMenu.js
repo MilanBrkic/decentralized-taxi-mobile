@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from "react-native";
 import { backend } from "../services/Backend";
-import { SocketClient } from "../services/SocketClient";
+import { SocketClient, MessageType } from "../services/SocketClient";
+import { convertAlgoToReadable } from "../services/Utils";
 
 export default function MainMenu({ navigation, route }) {
   const [user, setUser] = useState(route.params.user);
@@ -45,6 +47,29 @@ export default function MainMenu({ navigation, route }) {
     setAddingWallet(false);
     setUser(userResponse);
   };
+
+  useEffect(() => {
+    socketClient.addEventHandler(MessageType.RideEnded, async (data) => {
+      const algoPrice = convertAlgoToReadable(
+        data.ride.passenger.username === user.username
+          ? data.ride.paymentInfo.passengerNet
+          : data.ride.paymentInfo.driverNet
+      );
+
+      const secondText =
+        algoPrice > 0
+          ? `You earned ${Math.abs(algoPrice)} ALGO.`
+          : `It cost you ${Math.abs(algoPrice)} ALGO.`;
+      Alert.alert("Your ride has ended", secondText);
+
+      const gottenUser = await backend.getUser(user.username);
+      setUser(gottenUser);
+    });
+
+    return () => {
+      socketClient.removeEventHandler(MessageType.RideEnded);
+    };
+  });
 
   return (
     <View style={styles.container}>
