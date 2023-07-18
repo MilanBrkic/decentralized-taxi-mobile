@@ -127,7 +127,7 @@ export default function MainMenu({ navigation, route }) {
             style={styles.button}
             onPress={handleConfirmMnemonic}
           >
-            <Text style={styles.buttonText}>Confirm Mnemonic</Text>
+            <Text style={styles.buttonText}>Confirm</Text>
           </TouchableOpacity>
         </View>
       )}
